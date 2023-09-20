@@ -4,15 +4,110 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:paddingTop="20dp">
 
-    <ImageView
-        android:src="@drawable/ic_logo_full_light"
-        android:layout_width="240dp"
-        android:layout_height="240dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_currency"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:padding="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent">
+        <LinearLayout
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:layout_marginStart="15dp"
+            android:background="@drawable/shape_rounded"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:elevation="4dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="2dp"
+                android:layout_marginBottom="1dp"
+                android:background="@drawable/shape_rounded_green"
+                android:gravity="center">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="USD "
+                    android:textSize="14sp"
+                    android:gravity="center"
+                    android:textColor="@color/gray_dark"
+                    android:layout_gravity="center"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="$"
+                    android:textSize="16sp"
+                    android:textColor="@color/green_dark" />
+            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="97,10 ₽"
+                android:textSize="18sp"
+                android:layout_gravity="center"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:layout_marginEnd="15dp"
+            android:background="@drawable/shape_rounded"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:elevation="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="2dp"
+                android:layout_marginBottom="1dp"
+                android:background="@drawable/shape_rounded_violet"
+                android:gravity="center">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Euro "
+                    android:textSize="14sp"
+                    android:gravity="center"
+                    android:textColor="@color/gray_dark"
+                    android:layout_gravity="center"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="€"
+                    android:textSize="16sp"
+                    android:textColor="@color/violet_dark" />
+            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="102,10 ₽"
+                android:textSize="18sp"
+                android:layout_gravity="center"/>
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/pieChart"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cl_currency"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

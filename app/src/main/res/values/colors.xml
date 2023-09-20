@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
+    <color name="gray_dark">#97979F</color>
+    <color name="gray_light">#CCCCD0</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="gold">#F4E600</color>
+    <color name="gold_dark">#FCC70B</color>
+    <color name="orange_dark">#F28E1B</color>
+    <color name="chocolate">#E9631E</color>
+    <color name="red_light">#EA8383</color>
+    <color name="red_crimson">#E42323</color>
+    <color name="violet_ultra_light">#F3ECF8</color>
+    <color name="violet_medium">#C3037E</color>
+    <color name="violet_dark">#6E398C</color>
+    <color name="blue_dark">#444E99</color>
+    <color name="blue_medium">#2C71B0</color>
+    <color name="blue_light">#0596BB</color>
+    <color name="green_dark">#008E5B</color>
+    <color name="green_light">#8CBB26</color>
     <color name="green_main">#BEDB39</color>
+    <color name="green_ultra_light">#EFF8EC</color>
 </resources>
