@@ -17,12 +17,11 @@
         app:layout_constraintEnd_toEndOf="parent">
         <LinearLayout
             android:layout_width="120dp"
-            android:layout_height="wrap_content"
+            android:layout_height="65dp"
             android:padding="8dp"
             android:layout_marginStart="15dp"
             android:background="@drawable/shape_rounded"
             android:orientation="vertical"
-            android:layout_gravity="center"
             android:elevation="4dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -39,32 +38,30 @@
                     android:layout_height="wrap_content"
                     android:text="USD "
                     android:textSize="14sp"
-                    android:gravity="center"
-                    android:textColor="@color/gray_dark"
-                    android:layout_gravity="center"/>
+                    android:textColor="@color/gray_dark" />
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:text="$"
                     android:textSize="16sp"
                     android:textColor="@color/green_dark" />
             </LinearLayout>
             <TextView
+                android:id="@+id/tv_currency_usd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="97,10 ₽"
                 android:textSize="18sp"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="120dp"
-            android:layout_height="wrap_content"
+            android:layout_height="65dp"
             android:padding="8dp"
             android:layout_marginEnd="15dp"
             android:background="@drawable/shape_rounded"
             android:orientation="vertical"
-            android:layout_gravity="center"
             android:elevation="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -81,17 +78,16 @@
                     android:layout_height="wrap_content"
                     android:text="Euro "
                     android:textSize="14sp"
-                    android:gravity="center"
-                    android:textColor="@color/gray_dark"
-                    android:layout_gravity="center"/>
+                    android:textColor="@color/gray_dark"/>
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:text="€"
                     android:textSize="16sp"
                     android:textColor="@color/violet_dark" />
             </LinearLayout>
             <TextView
+                android:id="@+id/tv_currency_euro"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="102,10 ₽"
