@@ -16,6 +16,7 @@
     <color name="blue_dark">#444E99</color>
     <color name="blue_medium">#2C71B0</color>
     <color name="blue_light">#0596BB</color>
+    <color name="blue_ultra_light">#ECEFF8</color>
     <color name="green_dark">#008E5B</color>
     <color name="green_light">#8CBB26</color>
     <color name="green_main">#BEDB39</color>

@@ -36,13 +36,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="USD "
+                    android:text="@string/usd_title"
                     android:textSize="14sp"
-                    android:textColor="@color/gray_dark" />
+                    android:textColor="@color/gray_dark"
+                    android:layout_marginEnd="2dp"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="$"
+                    android:text="@string/usd_symbol"
                     android:textSize="16sp"
                     android:textColor="@color/green_dark" />
             </LinearLayout>
@@ -50,7 +51,7 @@
                 android:id="@+id/tv_currency_usd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="97,10 ₽"
+                android:text="@string/usd_to_ruble"
                 android:textSize="18sp"
                 android:layout_gravity="center" />
         </LinearLayout>
@@ -76,13 +77,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Euro "
+                    android:text="@string/euro_title"
                     android:textSize="14sp"
+                    android:layout_marginEnd="2dp"
                     android:textColor="@color/gray_dark"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="€"
+                    android:text="@string/euro_symbol"
                     android:textSize="16sp"
                     android:textColor="@color/violet_dark" />
             </LinearLayout>
@@ -90,7 +92,7 @@
                 android:id="@+id/tv_currency_euro"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="102,10 ₽"
+                android:text="@string/euro_to_ruble"
                 android:textSize="18sp"
                 android:layout_gravity="center"/>
         </LinearLayout>
@@ -101,22 +103,81 @@
         android:layout_width="300dp"
         android:layout_height="300dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cl_currency"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <android.widget.Button
-        android:layout_width="200dp"
-        android:layout_height="40dp"
-        android:textSize="16dp"
-        android:textAlignment="center"
-        android:drawableTop="@drawable/ic_plus"
-        android:drawableTint="@color/green_main"
-        android:paddingTop="8dp"
-        android:background="@drawable/shape_button_rect"
+    <LinearLayout
+        android:id="@+id/ll_operation_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/pieChart"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pieChart">
+        <android.widget.Button
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:text="@string/main_operation_plus"
+            android:textColor="@color/white"
+            android:background="@drawable/shape_rounded"
+            android:backgroundTint="@color/green_light"
+            android:layout_marginEnd="10dp"/>
+
+        <android.widget.Button
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:text="@string/main_operation_minus"
+            android:textColor="@color/white"
+            android:background="@drawable/shape_rounded"
+            android:backgroundTint="@color/red_crimson"
+            android:layout_marginStart="10dp"/>
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_operations"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        app:layout_constraintTop_toBottomOf="@id/ll_operation_buttons"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/main_month_operations_title"
+            android:textSize="20dp"
+            android:layout_marginStart="15dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            android:background="@drawable/shape_rounded"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_wallet"
+                app:tint="@color/blue_light" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/main_all_operations"
+                android:layout_gravity="center"/>
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ListView
+        android:id="@+id/lv_operations_month"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        app:layout_constraintTop_toBottomOf="@id/cl_operations"
+        android:layout_marginHorizontal="15dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
