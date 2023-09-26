@@ -2,8 +2,10 @@ package com.example.myfinances
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.Window
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myfinances.databinding.ActivityMainBinding
 import com.github.mikephil.charting.animation.Easing
@@ -20,6 +22,7 @@ import java.io.IOException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.decodeFromString
+import java.time.Month
 import kotlin.math.round
 
 @Serializable
@@ -31,6 +34,7 @@ data class Data(val success: Boolean,val timestamp: Int, val base: String,val da
 class MainActivity : AppCompatActivity() {
 	private lateinit var binding: ActivityMainBinding
 	private var usdCurrency: String = "-1"
+	private lateinit var db: DbRepository
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -45,14 +49,33 @@ class MainActivity : AppCompatActivity() {
 
 		setContentView(binding.root)
 
+		db = DbRepository(this)
+
 		fillPieChart(binding.pieChart)
 
+		fillMonthOperations(2023,9)
+
+		binding.pieChart.centerText = fillMonthlyExpenses()
+
+		// Отключить на время разработки, дабы не тратить запросы
+		//currencyApiRequest()
+	}
+
+	fun Click(view: View){
+		var period = db.GetCurrentPeriod()
+
+		Toast.makeText(this,period,Toast.LENGTH_SHORT).show()
+	}
+
+	private fun fillMonthlyExpenses(): String{
+		return "1 000 000,0 ₽"
+	}
+
+	private fun fillMonthOperations(year: Int, month: Int){
 		val list = listOf("1", "4", "3", "1", "4", "3", "1", "4", "3", "1", "4", "3")
 
 		binding.lvOperationsMonth.adapter =
 			ArrayAdapter(this, android.R.layout.simple_list_item_1, list)
-
-		currencyApiRequest()
 	}
 
 	private fun currencyApiRequest(){
