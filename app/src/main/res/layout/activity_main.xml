@@ -116,6 +116,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/pieChart">
         <android.widget.Button
+            android:onClick="buttonPlusOperation_Click"
             android:layout_width="120dp"
             android:layout_height="40dp"
             android:text="@string/main_operation_plus"
@@ -125,6 +126,7 @@
             android:layout_marginEnd="10dp"/>
 
         <android.widget.Button
+            android:onClick="buttonMinusOperation_Click"
             android:layout_width="120dp"
             android:layout_height="40dp"
             android:text="@string/main_operation_minus"
@@ -153,7 +155,6 @@
             app:layout_constraintBottom_toBottomOf="parent"/>
 
         <LinearLayout
-            android:onClick="Click"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="15dp"
