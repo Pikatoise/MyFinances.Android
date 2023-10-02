@@ -37,6 +37,10 @@ data class Data(val success: Boolean,val timestamp: Int, val base: String,val da
 class MainActivity : AppCompatActivity() {
 	private lateinit var binding: ActivityMainBinding
 	private lateinit var db: DbRepository
+	private lateinit var operationsList: ArrayList<Operation>
+	private lateinit var listAdapter: ListAdapter
+	private lateinit var listData: ListData
+	var dataArrayList = ArrayList<ListData?>()
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -78,13 +82,37 @@ class MainActivity : AppCompatActivity() {
 	}
 
 	private fun fillMonthOperations(year: Int, month: Int){
-		val list = db.getPeriodOperations(db.getCurrentPeriod().id)
+		operationsList = db.getPeriodOperations(db.getCurrentPeriod().id)
 
-		binding.lvOperationsMonth.adapter =
-			ArrayAdapter(this, android.R.layout.simple_list_item_1, list)
+		if (operationsList.isEmpty())
+			return
+
+		val imageList = intArrayOf(
+			R.drawable.ic_alcohol,
+			R.drawable.ic_products,
+			R.drawable.ic_taxi,
+			R.drawable.ic_bank,
+			R.drawable.ic_clothes,
+			R.drawable.ic_fun,
+			R.drawable.ic_gift,
+			R.drawable.ic_house,
+			R.drawable.ic_medical,
+			R.drawable.ic_salary,
+			R.drawable.ic_study,
+			R.drawable.ic_cafe
+		)
+
+		for (operation in operationsList) {
+			listData = ListData( imageList[operation.type], operation.title, operation.amount )
+			dataArrayList.add(listData)
+		}
+
+		listAdapter = ListAdapter(this@MainActivity, dataArrayList)
+		binding.lvOperationsMonth.adapter = listAdapter
+		binding.lvOperationsMonth.isClickable = true
 
 		binding.lvOperationsMonth.setOnItemClickListener { parent, view, position, id ->
-			Toast.makeText(this,list[position].amount.toString(),Toast.LENGTH_SHORT).show()
+			Toast.makeText(this,operationsList[position].amount.toString(),Toast.LENGTH_SHORT).show()
 		}
 	}
 
@@ -163,22 +191,29 @@ class MainActivity : AppCompatActivity() {
 		val entries: ArrayList<PieEntry> = ArrayList()
 
 		val operations = db.getPeriodOperations(db.getCurrentPeriod().id)
+
 		val typesExpenses: MutableMap<Int, Double> = mutableMapOf()
 
-		operations.forEach {
-			if (typesExpenses.containsKey(it.type)){
-				var oldValue = typesExpenses.get(it.type)!!
+		if (operations.isEmpty()){
+			entries.add(PieEntry(1f))
+		}
+		else{
+			operations.forEach {
+				if (typesExpenses.containsKey(it.type)){
+					var oldValue = typesExpenses.get(it.type)!!
 
-				typesExpenses[it.type] = oldValue + it.amount
+					typesExpenses[it.type] = oldValue + it.amount
+				}
+				else{
+					typesExpenses[it.type] = it.amount
+				}
 			}
-			else{
-				typesExpenses[it.type] = it.amount
+
+			typesExpenses.forEach{
+				entries.add(PieEntry(abs(it.value.toFloat())))
 			}
 		}
 
-		typesExpenses.forEach{
-			entries.add(PieEntry(abs(it.value.toFloat())))
-		}
 
 		val dataSet = PieDataSet(entries, "Категории")
 

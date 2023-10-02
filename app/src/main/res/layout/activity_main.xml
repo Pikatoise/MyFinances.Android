@@ -179,6 +179,9 @@
         android:id="@+id/lv_operations_month"
         android:layout_width="match_parent"
         android:layout_height="250dp"
+        tools:listitem="@layout/list_item_main"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="10.0sp"
         app:layout_constraintTop_toBottomOf="@id/cl_operations"
         android:layout_marginHorizontal="15dp"/>
 

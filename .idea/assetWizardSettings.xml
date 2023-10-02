@@ -318,8 +318,9 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_add_operation" />
-                            <entry key="sourceFile" value="C:\Users\Pikatoise\Desktop\ic_logo_full_light.svg" />
+                            <entry key="assetSourceType" value="FILE" />
+                            <entry key="outputName" value="ic_taxi" />
+                            <entry key="sourceFile" value="C:\Users\Pikatoise\Downloads\ic_taxi.svg" />
                           </map>
                         </option>
                       </PersistentState>

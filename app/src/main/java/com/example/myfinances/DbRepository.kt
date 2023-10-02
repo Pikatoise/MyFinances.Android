@@ -35,12 +35,14 @@ class DbRepository(context: Context) {
 			"SELECT * FROM period WHERE isCurrent = '1'",
 			null)
 
-		cursor.moveToFirst()
+		if (cursor != null && cursor.count > 0){
+			cursor.moveToFirst()
 
-		period.id = cursor.getInt(0)
-		period.year = cursor.getInt(1)
-		period.month = cursor.getInt(2)
-		period.isCurrent = true
+			period.id = cursor.getInt(0)
+			period.year = cursor.getInt(1)
+			period.month = cursor.getInt(2)
+			period.isCurrent = true
+		}
 
 		cursor.close()
 
@@ -54,18 +56,20 @@ class DbRepository(context: Context) {
 			"SELECT * FROM operation WHERE periodId = '${periodId}'",
 			null)
 
-		cursor.moveToFirst()
+		if (cursor != null && cursor.count > 0) {
+			cursor.moveToFirst()
 
-		while (!cursor.isAfterLast) {
-			val id: Int = cursor.getInt(0)
-			val type: Int = cursor.getInt(1)
-			val title: String = cursor.getString(2)
-			val amount: Double = cursor.getDouble(3)
-			val periodId: Int = periodId
+			while (!cursor.isAfterLast) {
+				val id: Int = cursor.getInt(0)
+				val type: Int = cursor.getInt(1)
+				val title: String = cursor.getString(2)
+				val amount: Double = cursor.getDouble(3)
+				val periodId: Int = periodId
 
-			operations.add(Operation(id,type,title,amount,periodId))
+				operations.add(Operation(id,type,title,amount,periodId))
 
-			cursor.moveToNext()
+				cursor.moveToNext()
+			}
 		}
 
 		cursor.close()
