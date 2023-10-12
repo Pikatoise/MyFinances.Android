@@ -3,6 +3,7 @@
     <color name="black">#FF000000</color>
     <color name="gray_dark">#97979F</color>
     <color name="gray_light">#CCCCD0</color>
+    <color name="gray_ultra_light">#DADADD</color>
     <color name="white">#FFFFFFFF</color>
     <color name="gold">#F4E600</color>
     <color name="gold_dark">#FCC70B</color>

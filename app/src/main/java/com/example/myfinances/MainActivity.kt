@@ -1,5 +1,7 @@
 package com.example.myfinances
 
+import android.content.Intent
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -40,7 +42,21 @@ class MainActivity : AppCompatActivity() {
 	private lateinit var operationsList: ArrayList<Operation>
 	private lateinit var listAdapter: ListAdapter
 	private lateinit var listData: ListData
-	var dataArrayList = ArrayList<ListData?>()
+	private var dataArrayList = ArrayList<ListData?>()
+	private val imageList = intArrayOf(
+		R.drawable.ic_alcohol,
+		R.drawable.ic_products,
+		R.drawable.ic_taxi,
+		R.drawable.ic_bank,
+		R.drawable.ic_clothes,
+		R.drawable.ic_fun,
+		R.drawable.ic_gift,
+		R.drawable.ic_house,
+		R.drawable.ic_medical,
+		R.drawable.ic_salary,
+		R.drawable.ic_study,
+		R.drawable.ic_cafe
+	)
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -54,6 +70,26 @@ class MainActivity : AppCompatActivity() {
 		window.requestFeature(Window.FEATURE_NO_TITLE)
 
 		setContentView(binding.root)
+
+		binding.buttonPlus.setOnClickListener {
+			val intent = Intent(this,OperationActivity::class.java)
+
+			intent.putExtra("operation",1)
+
+			intent.putExtra("images", imageList)
+
+			startActivityForResult(intent,0)
+		}
+
+		binding.buttonMinus.setOnClickListener {
+			val intent = Intent(this,OperationActivity::class.java)
+
+			intent.putExtra("operation",-1)
+
+			intent.putExtra("images", imageList)
+
+			startActivityForResult(intent,0)
+		}
 
 		// Инициализация БД
 		db = DbRepository(this)
@@ -73,34 +109,26 @@ class MainActivity : AppCompatActivity() {
 		//currencyApiRequest()
 	}
 
-	fun buttonPlusOperation_Click(view: View){
+	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+		super.onActivityResult(requestCode, resultCode, data)
 
-	}
-
-	fun buttonMinusOperation_Click(view: View){
-
+		if (requestCode == 0) {
+			if (resultCode == RESULT_OK) {
+				Toast.makeText(this,"Main",Toast.LENGTH_SHORT).show()
+			}
+		}
 	}
 
 	private fun fillMonthOperations(year: Int, month: Int){
 		operationsList = db.getPeriodOperations(db.getCurrentPeriod().id)
 
-		if (operationsList.isEmpty())
-			return
+		if (operationsList.isEmpty()){
+			binding.tvEmptyOperations.visibility = View.VISIBLE
 
-		val imageList = intArrayOf(
-			R.drawable.ic_alcohol,
-			R.drawable.ic_products,
-			R.drawable.ic_taxi,
-			R.drawable.ic_bank,
-			R.drawable.ic_clothes,
-			R.drawable.ic_fun,
-			R.drawable.ic_gift,
-			R.drawable.ic_house,
-			R.drawable.ic_medical,
-			R.drawable.ic_salary,
-			R.drawable.ic_study,
-			R.drawable.ic_cafe
-		)
+			return
+		}
+
+		binding.tvEmptyOperations.visibility = View.INVISIBLE
 
 		for (operation in operationsList) {
 			listData = ListData( imageList[operation.type], operation.title, operation.amount )
@@ -157,7 +185,7 @@ class MainActivity : AppCompatActivity() {
 		pieChart.setExtraOffsets(5f, 10f, 5f, 5f)
 
 		pieChart.isDrawHoleEnabled = true
-		pieChart.setHoleColor(getColor(R.color.white))
+		pieChart.setHoleColor(getColor(android.R.color.transparent))
 		pieChart.holeRadius = 90f
 
 		pieChart.setDrawCenterText(true)
@@ -178,11 +206,14 @@ class MainActivity : AppCompatActivity() {
 		// Месячный бюджет
 		val expenses = db.getMonthlyExpensesInRub()
 
-		if (expenses >= 0){
+		if (expenses == 0.0){
+			pieChart.setCenterTextColor(getColor(R.color.black))
+		}
+		else if (expenses > 0){
 			pieChart.setCenterTextColor(getColor(R.color.green_main))
 		}
 		else{
-			pieChart.setCenterTextColor(getColor(R.color.red_light))
+			pieChart.setCenterTextColor(getColor(R.color.red_crimson))
 		}
 
 		pieChart.centerText = NumberFormats.FormatToRuble(expenses)
@@ -222,18 +253,27 @@ class MainActivity : AppCompatActivity() {
 		dataSet.setDrawValues(false)
 
 		val colors: ArrayList<Int> = ArrayList()
-		colors.add(getColor(R.color.blue_light))
-		colors.add(getColor(R.color.chocolate))
-		colors.add(getColor(R.color.gold))
-		colors.add(getColor(R.color.green_light))
-		colors.add(getColor(R.color.red_crimson))
-		colors.add(getColor(R.color.blue_medium))
-		colors.add(getColor(R.color.green_dark))
-		colors.add(getColor(R.color.gold_dark))
-		colors.add(getColor(R.color.violet_medium))
-		colors.add(getColor(R.color.blue_dark))
-		colors.add(getColor(R.color.violet_dark))
-		colors.add(getColor(R.color.orange_dark))
+
+		if (entries.count() == 1 && entries[0].value == 1f){
+			colors.add(getColor(R.color.gray_dark))
+		}
+		else{
+			colors.addAll(
+				listOf(
+					getColor(R.color.orange_dark),
+					getColor(R.color.violet_dark),
+					getColor(R.color.blue_light),
+					getColor(R.color.chocolate),
+					getColor(R.color.gold),
+					getColor(R.color.green_light),
+					getColor(R.color.red_crimson),
+					getColor(R.color.blue_medium),
+					getColor(R.color.green_dark),
+					getColor(R.color.gold_dark),
+					getColor(R.color.violet_medium),
+					getColor(R.color.blue_dark),
+				))
+		}
 
 		dataSet.colors = colors
 
