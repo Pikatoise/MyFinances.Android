@@ -1,12 +1,11 @@
 package com.example.myfinances
 
+import android.R.attr
 import android.content.Intent
-import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.Window
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myfinances.databinding.ActivityMainBinding
@@ -15,20 +14,18 @@ import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.decodeFromString
-import java.time.Month
-import java.time.Year
 import java.util.Calendar
 import kotlin.math.abs
 import kotlin.math.round
+
 
 @Serializable
 data class Rates(val USD: Double, val RUB: Double)
@@ -114,12 +111,24 @@ class MainActivity : AppCompatActivity() {
 
 		if (requestCode == 0) {
 			if (resultCode == RESULT_OK) {
-				Toast.makeText(this,"Main",Toast.LENGTH_SHORT).show()
+				val title = data?.getStringExtra("title")
+				val amount = data?.getDoubleExtra("amount", 1.0)
+				val image = data?.getIntExtra("image", 0)
+
+				db.AddOperation(image,title,amount)
+
+				fillPieChart(binding.pieChart)
+
+				val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+				val currentMonth = Calendar.getInstance().get(Calendar.MONTH+1)
+				fillMonthOperations(currentYear,currentMonth)
 			}
 		}
 	}
 
 	private fun fillMonthOperations(year: Int, month: Int){
+		dataArrayList = ArrayList<ListData?>()
+
 		operationsList = db.getPeriodOperations(db.getCurrentPeriod().id)
 
 		if (operationsList.isEmpty()){

@@ -88,4 +88,11 @@ class DbRepository(context: Context) {
 
 		return expenses
 	}
+
+	public fun AddOperation(type: Int?, title: String?, amount: Double?){
+		val period = getCurrentPeriod()
+
+		mDb.execSQL(
+			"INSERT INTO operation(type,title,amount,periodId) VALUES ('${type}','${title}','${amount}','${period.id}')")
+	}
 }
