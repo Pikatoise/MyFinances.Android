@@ -1,6 +1,5 @@
 package com.example.myfinances
 
-import android.R.attr
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -40,6 +39,7 @@ class MainActivity : AppCompatActivity() {
 	private lateinit var listAdapter: ListAdapter
 	private lateinit var listData: ListData
 	private var dataArrayList = ArrayList<ListData?>()
+	private var debugCounter = 0
 	private val imageList = intArrayOf(
 		R.drawable.ic_alcohol,
 		R.drawable.ic_products,
@@ -88,19 +88,32 @@ class MainActivity : AppCompatActivity() {
 			startActivityForResult(intent,0)
 		}
 
+		binding.tvCurrencyUsd.setOnClickListener{
+			debugCounter++
+
+			if (debugCounter == 5){
+				enableDebug()
+			}
+		}
+
+		binding.tvMonthOperatons.setOnClickListener {
+			val operationsCount = db.getOperationsCount()
+			val periodsCount = db.getPeriodsCount()
+
+			Toast.makeText(this,"Операций $operationsCount\nПериодов $periodsCount",Toast.LENGTH_SHORT).show()
+		}
+
 		// Инициализация БД
 		db = DbRepository(this)
+
+		// Инициализация текущего периода
+		db.updateCurrentPeriod()
 
 		// Настройка диаграммы
 		configPieChart(binding.pieChart)
 
-		// Заполнение диаграммы и месячного бюджета
-		fillPieChart(binding.pieChart)
-
-		// Заполнение списка операция текущего месяца
-		val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-		val currentMonth = Calendar.getInstance().get(Calendar.MONTH+1)
-		fillMonthOperations(currentYear,currentMonth)
+		// Загрузка данных из бд
+		updateData()
 
 		// Отключить на время разработки, дабы не тратить запросы
 		//currencyApiRequest()
@@ -115,19 +128,24 @@ class MainActivity : AppCompatActivity() {
 				val amount = data?.getDoubleExtra("amount", 1.0)
 				val image = data?.getIntExtra("image", 0)
 
-				db.AddOperation(image,title,amount)
+				db.addOperation(image,title,amount)
 
-				fillPieChart(binding.pieChart)
-
-				val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-				val currentMonth = Calendar.getInstance().get(Calendar.MONTH+1)
-				fillMonthOperations(currentYear,currentMonth)
+				updateData()
 			}
 		}
 	}
 
+	private fun updateData(){
+		fillPieChart(binding.pieChart)
+
+		val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+		val currentMonth = Calendar.getInstance().get(Calendar.MONTH+1)
+		fillMonthOperations(currentYear,currentMonth)
+	}
+
 	private fun fillMonthOperations(year: Int, month: Int){
 		dataArrayList = ArrayList<ListData?>()
+		binding.lvOperationsMonth.adapter = null
 
 		operationsList = db.getPeriodOperations(db.getCurrentPeriod().id)
 
@@ -148,8 +166,16 @@ class MainActivity : AppCompatActivity() {
 		binding.lvOperationsMonth.adapter = listAdapter
 		binding.lvOperationsMonth.isClickable = true
 
-		binding.lvOperationsMonth.setOnItemClickListener { parent, view, position, id ->
-			Toast.makeText(this,operationsList[position].amount.toString(),Toast.LENGTH_SHORT).show()
+		binding.lvOperationsMonth.setOnItemClickListener { _, _, position, _ ->
+			val dialogRemove = DialogRemoveOperation {
+				db.removeOperation(operationsList[position].id)
+
+				updateData()
+
+				Toast.makeText(this,"Готово",Toast.LENGTH_SHORT).show()
+			}
+			val manager = supportFragmentManager
+			dialogRemove.show(manager,"removeDialog")
 		}
 	}
 
@@ -213,7 +239,7 @@ class MainActivity : AppCompatActivity() {
 
 	private fun fillPieChart(pieChart: PieChart){
 		// Месячный бюджет
-		val expenses = db.getMonthlyExpensesInRub()
+		val expenses = db.getMonthlyExpensesInRub(db.getCurrentPeriod())
 
 		if (expenses == 0.0){
 			pieChart.setCenterTextColor(getColor(R.color.black))
@@ -228,6 +254,7 @@ class MainActivity : AppCompatActivity() {
 		pieChart.centerText = NumberFormats.FormatToRuble(expenses)
 
 		// Диаграмма и свойства
+
 		val entries: ArrayList<PieEntry> = ArrayList()
 
 		val operations = db.getPeriodOperations(db.getCurrentPeriod().id)
@@ -242,7 +269,7 @@ class MainActivity : AppCompatActivity() {
 				if (typesExpenses.containsKey(it.type)){
 					var oldValue = typesExpenses.get(it.type)!!
 
-					typesExpenses[it.type] = oldValue + it.amount
+					typesExpenses[it.type] = abs(oldValue) + abs(it.amount)
 				}
 				else{
 					typesExpenses[it.type] = it.amount
@@ -291,5 +318,13 @@ class MainActivity : AppCompatActivity() {
 		pieChart.data = data
 
 		pieChart.invalidate()
+	}
+
+	fun enableDebug() {
+		db.DbDebugMode()
+
+		updateData()
+
+		Toast.makeText(this,"Debug mode",Toast.LENGTH_SHORT).show()
 	}
 }

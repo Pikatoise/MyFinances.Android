@@ -1,11 +1,16 @@
 package com.example.myfinances
 
+import android.R
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
+import android.view.View.OnTouchListener
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.ScrollView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myfinances.databinding.ActivityOperationBinding
@@ -17,6 +22,7 @@ class OperationActivity : AppCompatActivity() {
 	private var isUserInteracting: Boolean = false
 	private var images: IntArray? = intArrayOf()
 
+	@SuppressLint("ClickableViewAccessibility")
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 
@@ -36,6 +42,7 @@ class OperationActivity : AppCompatActivity() {
 			finish()
 		}
 
+
 		val intent = this.intent
 
 		if (intent != null){
@@ -46,6 +53,12 @@ class OperationActivity : AppCompatActivity() {
 
 			binding.spinnerType.adapter = mSpinnerAdapter
 
+			binding.spinnerType.setOnTouchListener(OnTouchListener { _, _ ->
+				binding.etTitle.hideKeyboard()
+				binding.etAmount.hideKeyboard()
+
+				false
+			})
 //			binding.spinnerType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 //				override fun onItemSelected(adapterView: AdapterView<*>?, view: View,i: Int,l: Long) {
 //					if (isUserInteracting) {
@@ -68,6 +81,11 @@ class OperationActivity : AppCompatActivity() {
 			else
 				binding.tvOperation.text = "Расход"
 		}
+	}
+
+	fun View.hideKeyboard() {
+		val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+		imm.hideSoftInputFromWindow(windowToken, 0)
 	}
 
 	fun sendData() {
