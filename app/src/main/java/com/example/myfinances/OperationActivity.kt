@@ -36,13 +36,6 @@ class OperationActivity : AppCompatActivity() {
 			finish()
 		}
 
-		binding.buttonAdd.setOnClickListener {
-			val intent = Intent()
-			setResult(Activity.RESULT_OK, intent)
-			finish()
-		}
-
-
 		val intent = this.intent
 
 		if (intent != null){
@@ -59,17 +52,6 @@ class OperationActivity : AppCompatActivity() {
 
 				false
 			})
-//			binding.spinnerType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-//				override fun onItemSelected(adapterView: AdapterView<*>?, view: View,i: Int,l: Long) {
-//					if (isUserInteracting) {
-//						Toast.makeText(this@OperationActivity, binding.spinnerType.selectedItemPosition.toString(), Toast.LENGTH_SHORT).show()
-//					}
-//				}
-//
-//				override fun onNothingSelected(adapterView: AdapterView<*>?) {
-//
-//				}
-//			}
 
 			binding.buttonAdd.setOnClickListener {
 				if (checkFilled())

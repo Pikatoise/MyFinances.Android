@@ -3,8 +3,11 @@ package com.example.myfinances
 import android.content.Context
 import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
+import android.os.Build
+import androidx.annotation.RequiresApi
 import java.io.IOException
 import java.io.Serializable
+import java.time.LocalDateTime
 import java.util.Calendar
 
 
@@ -28,9 +31,10 @@ class DbRepository(context: Context){
 		}
 	}
 
+	@RequiresApi(Build.VERSION_CODES.O)
 	public fun updateCurrentPeriod() {
 		val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-		val currentMonth = Calendar.getInstance().get(Calendar.MONTH+1)
+		val currentMonth = LocalDateTime.now().month.value
 
 		var period: Period = Period(-1,-1,-1,false)
 
@@ -132,6 +136,62 @@ class DbRepository(context: Context){
 			"DELETE FROM operation WHERE id=${id}")
 	}
 
+	public fun getAllOperations(): ArrayList<Operation>{
+		val operations: ArrayList<Operation> = arrayListOf()
+
+		val cursor = mDb.rawQuery(
+			"SELECT * FROM operation",
+			null)
+
+		if (cursor != null && cursor.count > 0) {
+			cursor.moveToFirst()
+
+			while (!cursor.isAfterLast) {
+				val id: Int = cursor.getInt(0)
+				val type: Int = cursor.getInt(1)
+				val title: String = cursor.getString(2)
+				val amount: Double = cursor.getDouble(3)
+				val periodId: Int = cursor.getInt(4)
+
+				operations.add(Operation(id,type,title,amount,periodId))
+
+				cursor.moveToNext()
+			}
+		}
+
+		cursor.close()
+
+		return operations
+	}
+
+	public fun getAllPeriods(): ArrayList<Period>{
+		val periods: ArrayList<Period> = arrayListOf()
+
+		val cursor = mDb.rawQuery(
+			"SELECT * FROM period",
+			null)
+
+		if (cursor != null && cursor.count > 0) {
+			cursor.moveToFirst()
+
+			while (!cursor.isAfterLast) {
+				val id: Int = cursor.getInt(0)
+				val year: Int = cursor.getInt(1)
+				val month: Int = cursor.getInt(2)
+				val isCurrent: Boolean = cursor.getInt(3) == 1
+
+				periods.add(Period(id, year, month, isCurrent))
+
+				cursor.moveToNext()
+			}
+		}
+
+		cursor.close()
+
+		return periods
+	}
+
+	@RequiresApi(Build.VERSION_CODES.O)
 	public fun DbDebugMode() {
 		addOperation(9,"Зарплата",34000.0)
 		addOperation(1,"Продукты",-400.0)
@@ -145,7 +205,7 @@ class DbRepository(context: Context){
 		addOperation(9,"Зарплата",12000.0)
 
 		val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-		val currentMonth = Calendar.getInstance().get(Calendar.MONTH+1)
+		val currentMonth = LocalDateTime.now().month.value
 
 		mDb.execSQL("INSERT INTO period(year,month) VALUES(${currentYear},${currentMonth-1})")
 		mDb.execSQL("INSERT INTO period(year,month) VALUES(${currentYear},${currentMonth-2})")

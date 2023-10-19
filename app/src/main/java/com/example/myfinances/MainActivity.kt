@@ -1,11 +1,13 @@
 package com.example.myfinances
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.Window
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myfinances.databinding.ActivityMainBinding
 import com.github.mikephil.charting.animation.Easing
@@ -21,6 +23,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
+import java.time.LocalDateTime
 import java.util.Calendar
 import kotlin.math.abs
 import kotlin.math.round
@@ -35,8 +38,6 @@ class MainActivity : AppCompatActivity() {
 	private lateinit var binding: ActivityMainBinding
 	private lateinit var db: DbRepository
 	private lateinit var operationsList: ArrayList<Operation>
-	private lateinit var listAdapter: ListAdapter
-	private lateinit var listData: ListData
 	private var dataArrayList = ArrayList<ListData?>()
 	private var debugCounter = 0
 	private val imageList = intArrayOf(
@@ -105,7 +106,8 @@ class MainActivity : AppCompatActivity() {
 		binding.llAllOperations.setOnClickListener {
 			val intent = Intent(this,AllOperationsActivity::class.java)
 
-			intent.putExtra("images", imageList)
+			intent.putExtra("periods", db.getAllPeriods())
+			intent.putExtra("operations", db.getAllOperations())
 
 			startActivity(intent)
 		}
@@ -142,11 +144,12 @@ class MainActivity : AppCompatActivity() {
 		}
 	}
 
+	@RequiresApi(Build.VERSION_CODES.O)
 	private fun updateData(){
 		fillPieChart(binding.pieChart)
 
 		val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-		val currentMonth = Calendar.getInstance().get(Calendar.MONTH+1)
+		val currentMonth = LocalDateTime.now().month.value
 		fillMonthOperations(currentYear,currentMonth)
 	}
 
@@ -165,11 +168,11 @@ class MainActivity : AppCompatActivity() {
 		binding.tvEmptyOperations.visibility = View.INVISIBLE
 
 		for (operation in operationsList) {
-			listData = ListData( imageList[operation.type], operation.title, operation.amount )
+			val listData = ListData( imageList[operation.type], operation.title, operation.amount )
 			dataArrayList.add(listData)
 		}
 
-		listAdapter = ListAdapter(this@MainActivity, dataArrayList)
+		val listAdapter = ListAdapter(this@MainActivity, dataArrayList)
 		binding.lvOperationsMonth.adapter = listAdapter
 		binding.lvOperationsMonth.isClickable = true
 

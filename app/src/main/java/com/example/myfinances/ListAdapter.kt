@@ -10,14 +10,14 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat.getColor
 
 class ListAdapter(context: Context, dataArrayList: ArrayList<ListData?>?) :
-	ArrayAdapter<ListData?>(context, R.layout.list_item_main, dataArrayList!!) {
+	ArrayAdapter<ListData?>(context, R.layout.list_item, dataArrayList!!) {
 
 	override fun getView(position: Int, view: View?, parent: ViewGroup): View {
 		var currentView = view
 		val listData = getItem(position)
 
 		if (currentView == null) {
-			currentView = LayoutInflater.from(context).inflate(R.layout.list_item_main, parent, false)
+			currentView = LayoutInflater.from(context).inflate(R.layout.list_item, parent, false)
 		}
 
 		val listImage = currentView!!.findViewById<ImageView>(R.id.listImage)

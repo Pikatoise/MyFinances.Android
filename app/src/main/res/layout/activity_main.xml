@@ -186,7 +186,7 @@
         android:id="@+id/lv_operations_month"
         android:layout_width="match_parent"
         android:layout_height="225dp"
-        tools:listitem="@layout/list_item_main"
+        tools:listitem="@layout/list_item"
         android:divider="@android:color/transparent"
         android:dividerHeight="10.0sp"
         app:layout_constraintTop_toBottomOf="@id/cl_operations"

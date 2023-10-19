@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="50dp"
+    android:paddingVertical="50dp"
     tools:context=".AllOperationsActivity">
 
     <ImageView
@@ -20,7 +20,7 @@
         android:id="@+id/tv_operation"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:text="История операция"
+        android:text="История операций"
         android:fontFamily="sans-serif-black"
         android:textSize="26sp"
         android:textStyle="bold"
@@ -30,10 +30,10 @@
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <ListView
-        android:id="@+id/lv_operations_month"
+        android:id="@+id/lv_all_operations"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:listitem="@layout/list_item_main"
+        tools:listitem="@layout/detailed_list_item"
         android:divider="@android:color/transparent"
         android:dividerHeight="10.0sp"
         android:layout_marginTop="15dp"

@@ -9,9 +9,22 @@ import java.util.Calendar
 
 class AllOperationsActivity : AppCompatActivity() {
 	private lateinit var binding: ActivityAllOperationsBinding
-	private lateinit var db: DbRepository
-	private lateinit var imageList: IntArray
-	private lateinit var operationsList: ArrayList<Operation>
+	private lateinit var periods: ArrayList<Period>
+	private lateinit var operations: ArrayList<Operation>
+	private val imageList = intArrayOf(
+		R.drawable.ic_alcohol,
+		R.drawable.ic_products,
+		R.drawable.ic_taxi,
+		R.drawable.ic_bank,
+		R.drawable.ic_clothes,
+		R.drawable.ic_fun,
+		R.drawable.ic_gift,
+		R.drawable.ic_house,
+		R.drawable.ic_medical,
+		R.drawable.ic_salary,
+		R.drawable.ic_study,
+		R.drawable.ic_cafe
+	)
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -20,36 +33,24 @@ class AllOperationsActivity : AppCompatActivity() {
 
 		setContentView(binding.root)
 
-		db = intent.getSerializableExtra("db") as DbRepository
-		imageList = intent.getIntArrayExtra("images") as IntArray
+		binding.ivBackBtn.setOnClickListener{
+			finish()
+		}
 
-		val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-		val currentMonth = Calendar.getInstance().get(Calendar.MONTH+1)
+		val intent = this.intent
 
-		fillMonthOperations(currentYear	,currentMonth)
+		if (intent != null){
+			operations = intent.getParcelableArrayListExtra<Operation>("operations")!!
+			periods = intent.getParcelableArrayListExtra<Period>("periods")!!
 
-		binding.lvOperationsMonth.isClickable = true
-
-		binding.lvOperationsMonth.setOnItemClickListener { _, _, position, _ ->
-			val dialogRemove = DialogRemoveOperation {
-				db.removeOperation(operationsList[position].id)
-
-				fillMonthOperations(currentYear, currentMonth)
-
-				Toast.makeText(this,"Готово", Toast.LENGTH_SHORT).show()
-			}
-			val manager = supportFragmentManager
-			dialogRemove.show(manager,"removeDialog")
+			fillAllOperations()
 		}
 	}
 
-	private fun fillMonthOperations(year: Int, month: Int){
-		var dataArrayList = ArrayList<ListData?>()
-		binding.lvOperationsMonth.adapter = null
+	private fun fillAllOperations(){
+		val detailedDataArrayList = ArrayList<DetailedListData?>()
 
-		operationsList = db.getPeriodOperations(db.getCurrentPeriod().id)
-
-		if (operationsList.isEmpty()){
+		if (operations.isEmpty()){
 			binding.tvEmptyOperations.visibility = View.VISIBLE
 
 			return
@@ -57,11 +58,20 @@ class AllOperationsActivity : AppCompatActivity() {
 
 		binding.tvEmptyOperations.visibility = View.INVISIBLE
 
-		for (operation in operationsList) {
-			dataArrayList.add(ListData( imageList[operation.type], operation.title, operation.amount ))
+		for (operation in operations) {
+			val period = periods.first { period: Period -> period.id == operation.periodId  }
+
+			val detailedListData = DetailedListData(
+				imageList[operation.type],
+				operation.title,
+				operation.amount,
+				period.year,
+				period.month
+			)
+			detailedDataArrayList.add(detailedListData)
 		}
 
-		var listAdapter = ListAdapter(this@AllOperationsActivity, dataArrayList)
-		binding.lvOperationsMonth.adapter = listAdapter
+		val listAdapter = DetailedListAdapter(this@AllOperationsActivity, detailedDataArrayList)
+		binding.lvAllOperations.adapter = listAdapter
 	}
 }
