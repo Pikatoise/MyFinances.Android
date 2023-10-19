@@ -4,10 +4,11 @@ import android.content.Context
 import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
 import java.io.IOException
+import java.io.Serializable
 import java.util.Calendar
 
 
-class DbRepository(context: Context) {
+class DbRepository(context: Context){
 	private var mDbHelper: DatabaseHelper
 	private var mDb: SQLiteDatabase
 

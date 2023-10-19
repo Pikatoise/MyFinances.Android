@@ -31,7 +31,6 @@ data class Rates(val USD: Double, val RUB: Double)
 @Serializable
 data class Data(val success: Boolean,val timestamp: Int, val base: String,val date: String,val rates: Rates)
 
-
 class MainActivity : AppCompatActivity() {
 	private lateinit var binding: ActivityMainBinding
 	private lateinit var db: DbRepository
@@ -101,6 +100,14 @@ class MainActivity : AppCompatActivity() {
 			val periodsCount = db.getPeriodsCount()
 
 			Toast.makeText(this,"Операций $operationsCount\nПериодов $periodsCount",Toast.LENGTH_SHORT).show()
+		}
+
+		binding.llAllOperations.setOnClickListener {
+			val intent = Intent(this,AllOperationsActivity::class.java)
+
+			intent.putExtra("images", imageList)
+
+			startActivity(intent)
 		}
 
 		// Инициализация БД
