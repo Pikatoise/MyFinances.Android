@@ -55,6 +55,7 @@ class MainActivity : AppCompatActivity() {
 		R.drawable.ic_cafe
 	)
 
+	@RequiresApi(Build.VERSION_CODES.O)
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 
@@ -125,9 +126,10 @@ class MainActivity : AppCompatActivity() {
 		updateData()
 
 		// Отключить на время разработки, дабы не тратить запросы
-		//currencyApiRequest()
+		currencyApiRequest()
 	}
 
+	@RequiresApi(Build.VERSION_CODES.O)
 	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 		super.onActivityResult(requestCode, resultCode, data)
 
@@ -153,6 +155,7 @@ class MainActivity : AppCompatActivity() {
 		fillMonthOperations(currentYear,currentMonth)
 	}
 
+	@RequiresApi(Build.VERSION_CODES.O)
 	private fun fillMonthOperations(year: Int, month: Int){
 		dataArrayList = ArrayList<ListData?>()
 		binding.lvOperationsMonth.adapter = null
@@ -330,6 +333,7 @@ class MainActivity : AppCompatActivity() {
 		pieChart.invalidate()
 	}
 
+	@RequiresApi(Build.VERSION_CODES.O)
 	fun enableDebug() {
 		db.DbDebugMode()
 
