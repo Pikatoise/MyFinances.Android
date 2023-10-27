@@ -21,5 +21,6 @@
     <color name="green_dark">#008E5B</color>
     <color name="green_light">#8CBB26</color>
     <color name="green_main">#BEDB39</color>
+    <color name="green_medium_light">#DBF3BF</color>
     <color name="green_ultra_light">#EFF8EC</color>
 </resources>

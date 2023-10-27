@@ -333,7 +333,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/restore_from_trash/baseline_restore_from_trash_24.xml" />
+                                      <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/menu/baseline_menu_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -343,8 +343,9 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_trash" />
-                            <entry key="sourceFile" value="C:\Users\Pikatoise\Downloads\ic_taxi.svg" />
+                            <entry key="assetSourceType" value="FILE" />
+                            <entry key="outputName" value="ic_info" />
+                            <entry key="sourceFile" value="C:\Users\Pikatoise\Downloads\ic_info.svg" />
                           </map>
                         </option>
                       </PersistentState>
