@@ -126,7 +126,7 @@ class MainFragment : Fragment() {
 		updateData()
 
 		// Отключить на время разработки, дабы не тратить запросы
-		//currencyApiRequest()
+		currencyApiRequest()
 
 		return binding.root
 	}

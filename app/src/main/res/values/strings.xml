@@ -24,4 +24,8 @@
     <string name="category_salary">Зарплата</string>
     <string name="category_study">Учеба</string>
     <string name="category_taxi">Транспорт</string>
+    <string name="version">Версия: 1.0</string>
+    <string name="email"><u>wierwolf@inbox.ru</u></string>
+    <string name="tips_title"><b>Современный человек</b>- финансово <b>безграмотен</b>. Управление финансами, одно из <b>важнейших умений</b>, которым мы пользуемся <b>всю</b> свою жизнь. \n\nНо финансовой грамотности <b>не учат</b> в школе, каждый человек должен <b>своими силами</b> обуздать это умение. \n\nСледующие <b>10 шагов</b> помогут вам <b>правильно</b> тратить, сохранять и вкладывать</string>
+    <string name="tips_quote">\"Остерегайтесь мелких и напрасных расходов, ибо маленькая течь может потопить большой корабль.\"</string>
 </resources>
