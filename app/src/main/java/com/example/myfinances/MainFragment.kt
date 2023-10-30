@@ -88,7 +88,9 @@ class MainFragment : Fragment() {
 				startActivityForResult(intent,0)
 			}
 
-			tvCurrencyUsd.setOnClickListener{
+			// For Debug
+
+			/*tvCurrencyUsd.setOnClickListener{
 				debugCounter++
 
 				if (debugCounter == 5){
@@ -101,7 +103,7 @@ class MainFragment : Fragment() {
 				val periodsCount = db.getPeriodsCount()
 
 				Toast.makeText(activity,"Операций $operationsCount\nПериодов $periodsCount",Toast.LENGTH_SHORT).show()
-			}
+			}*/
 
 			llAllOperations.setOnClickListener {
 				val intent = Intent(activity,AllOperationsActivity::class.java)

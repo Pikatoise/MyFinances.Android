@@ -34,7 +34,7 @@ class AboutFragment : Fragment() {
 			}
 
 			tvDeveloperContactsVk.setOnClickListener {
-				val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://vk.com/pikatoise"))
+				val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://vk.com/myfinancesapp"))
 				startActivity(browserIntent)
 			}
 		}
