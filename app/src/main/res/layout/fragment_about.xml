@@ -9,160 +9,173 @@
     android:background="@color/green_main"
     tools:context=".AboutFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_programm"
+    <ScrollView
+        android:id="@+id/myView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:elevation="5dp"
-        android:padding="20dp"
-        android:background="@drawable/shape_rounded_green"
+        android:orientation="vertical"
+        android:scrollbarSize="0dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-    <TextView
-        android:id="@+id/tv_programm_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="О программе"
-        android:textColor="@color/black"
-        android:textStyle="bold"
-        android:textSize="36sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tv_programm_date_create"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Релиз: 30.10.2023"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_marginTop="30dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_programm_title"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <TextView
-        android:id="@+id/tv_programm_date_update"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Последнее обновление: 30.10.2023"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_marginTop="10dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_programm_date_create"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <TextView
-        android:id="@+id/tv_programm_version"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/version"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_marginTop="10dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_programm_date_update"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-        <TextView
-            android:id="@+id/tv_programm_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Free software"
-            android:textColor="@color/green_dark"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="10dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_programm_version"
-            app:layout_constraintEnd_toEndOf="parent"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cs_developer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:elevation="5dp"
-        android:padding="20dp"
-        android:background="@drawable/shape_rounded_green"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cl_programm">
-
-        <TextView
-            android:id="@+id/tv_developer_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Контакты"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:textSize="36sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_developer_contacts_mail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Почта:"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="30dp"
-            app:layout_constraintTop_toBottomOf="@id/tv_developer_title"
-            app:layout_constraintStart_toStartOf="parent"/>
-
-        <TextView
-            android:id="@+id/tv_developer_contacts_mail_content"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/email"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:layout_marginTop="30dp"
-            android:layout_marginStart="5dp"
-            app:layout_constraintTop_toBottomOf="@id/tv_developer_title"
-            app:layout_constraintStart_toEndOf="@id/tv_developer_contacts_mail"/>
-
-        <TextView
-            android:id="@+id/tv_developer_contacts_vk"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:text="VK"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:background="@drawable/shape_rounded"
-            android:backgroundTint="@color/blue_vk"
-            android:layout_marginTop="15dp"
-            app:layout_constraintTop_toBottomOf="@id/tv_developer_contacts_mail_content"
-            app:layout_constraintStart_toStartOf="parent"/>
+            android:layout_height="wrap_content">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/cl_programm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:elevation="5dp"
+                    android:padding="20dp"
+                    android:background="@drawable/shape_rounded_green"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-        <RelativeLayout
-            android:id="@+id/rl_developer_contacts_telegram"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:gravity="center"
-            android:background="@drawable/shape_rounded"
-            android:backgroundTint="@color/blue_telegram"
-            android:layout_marginTop="15dp"
-            app:layout_constraintTop_toBottomOf="@id/tv_developer_contacts_vk"
-            app:layout_constraintStart_toStartOf="parent">
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_paper_plane"
-                app:tint="@color/white"
-                android:layout_centerInParent="true"/>
-        </RelativeLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/tv_programm_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="О программе"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="36sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
+                <TextView
+                    android:id="@+id/tv_programm_date_create"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Релиз: 30.10.2023"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="30dp"
+                    app:layout_constraintTop_toBottomOf="@id/tv_programm_title"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tv_programm_date_update"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Последнее обновление: 30.10.2023"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintTop_toBottomOf="@id/tv_programm_date_create"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tv_programm_version"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/version"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintTop_toBottomOf="@id/tv_programm_date_update"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/tv_programm_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Free software"
+                        android:textColor="@color/green_dark"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="10dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tv_programm_version"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/cs_developer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:elevation="5dp"
+                    android:padding="20dp"
+                    android:background="@drawable/shape_rounded_green"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/cl_programm">
+
+                    <TextView
+                        android:id="@+id/tv_developer_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Контакты"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:textSize="36sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tv_developer_contacts_mail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Почта:"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="30dp"
+                        app:layout_constraintTop_toBottomOf="@id/tv_developer_title"
+                        app:layout_constraintStart_toStartOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/tv_developer_contacts_mail_content"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/email"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginStart="5dp"
+                        app:layout_constraintTop_toBottomOf="@id/tv_developer_title"
+                        app:layout_constraintStart_toEndOf="@id/tv_developer_contacts_mail"/>
+
+                    <TextView
+                        android:id="@+id/tv_developer_contacts_vk"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:text="VK"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:background="@drawable/shape_rounded"
+                        android:backgroundTint="@color/blue_vk"
+                        android:layout_marginTop="15dp"
+                        app:layout_constraintTop_toBottomOf="@id/tv_developer_contacts_mail_content"
+                        app:layout_constraintStart_toStartOf="parent"/>
+
+                    <RelativeLayout
+                        android:id="@+id/rl_developer_contacts_telegram"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:gravity="center"
+                        android:background="@drawable/shape_rounded"
+                        android:backgroundTint="@color/blue_telegram"
+                        android:layout_marginTop="15dp"
+                        app:layout_constraintTop_toBottomOf="@id/tv_developer_contacts_vk"
+                        app:layout_constraintStart_toStartOf="parent">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_paper_plane"
+                            app:tint="@color/white"
+                            android:layout_centerInParent="true"/>
+                    </RelativeLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
