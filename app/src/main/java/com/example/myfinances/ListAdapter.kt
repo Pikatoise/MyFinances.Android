@@ -29,9 +29,9 @@ class ListAdapter(context: Context, dataArrayList: ArrayList<ListData?>?) :
 		listAmount.text = listData.amount.toString() + " ₽"
 
 		if (listData.amount < 0)
-			listAmount.setTextColor(getColor(context,R.color.red_crimson))
+			listAmount.setTextColor(getColor(context, R.color.red_crimson))
 		else
-			listAmount.setTextColor(getColor(context,R.color.green_main))
+			listAmount.setTextColor(getColor(context, R.color.green_main))
 
 		return currentView
 	}

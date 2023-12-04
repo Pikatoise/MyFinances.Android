@@ -1,7 +1,6 @@
 package com.example.myfinances
 
 import android.content.Intent
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -13,7 +12,6 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.getColor
-import androidx.core.view.GravityCompat
 import com.example.myfinances.databinding.FragmentMainBinding
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.PieChart
@@ -40,7 +38,7 @@ data class Data(val success: Boolean,val timestamp: Int, val base: String,val da
 
 class MainFragment : Fragment() {
 	private lateinit var binding: FragmentMainBinding
-	private lateinit var db: DbRepository
+	private lateinit var db: OperationRepository
 	private lateinit var operationsList: ArrayList<Operation>
 	private var dataArrayList = ArrayList<ListData?>()
 	private var debugCounter = 0
@@ -69,7 +67,7 @@ class MainFragment : Fragment() {
 
 		binding.apply {
 			buttonPlus.setOnClickListener {
-				val intent = Intent(activity,OperationActivity::class.java)
+				val intent = Intent(activity, OperationActivity::class.java)
 
 				intent.putExtra("operation",1)
 
@@ -79,7 +77,7 @@ class MainFragment : Fragment() {
 			}
 
 			buttonMinus.setOnClickListener {
-				val intent = Intent(activity,OperationActivity::class.java)
+				val intent = Intent(activity, OperationActivity::class.java)
 
 				intent.putExtra("operation",-1)
 
@@ -106,7 +104,7 @@ class MainFragment : Fragment() {
 			}*/
 
 			llAllOperations.setOnClickListener {
-				val intent = Intent(activity,AllOperationsActivity::class.java)
+				val intent = Intent(activity, AllOperationsActivity::class.java)
 
 				intent.putExtra("periods", db.getAllPeriods())
 				intent.putExtra("operations", db.getAllOperations())
@@ -116,7 +114,7 @@ class MainFragment : Fragment() {
 		}
 
 		// Инициализация БД
-		db = DbRepository(this.requireContext())
+		db = OperationRepository(this.requireContext())
 
 		// Инициализация текущего периода
 		db.updateCurrentPeriod()
@@ -127,7 +125,6 @@ class MainFragment : Fragment() {
 		// Загрузка данных из бд
 		updateData()
 
-		// Отключить на время разработки, дабы не тратить запросы
 		currencyApiRequest()
 
 		return binding.root
@@ -259,13 +256,13 @@ class MainFragment : Fragment() {
 		val expenses = db.getMonthlyExpensesInRub(db.getCurrentPeriod())
 
 		if (expenses == 0.0){
-			pieChart.setCenterTextColor(getColor(requireContext(),R.color.black))
+			pieChart.setCenterTextColor(getColor(requireContext(), R.color.black))
 		}
 		else if (expenses > 0){
-			pieChart.setCenterTextColor(getColor(requireContext(),R.color.green_main))
+			pieChart.setCenterTextColor(getColor(requireContext(), R.color.green_main))
 		}
 		else{
-			pieChart.setCenterTextColor(getColor(requireContext(),R.color.red_crimson))
+			pieChart.setCenterTextColor(getColor(requireContext(), R.color.red_crimson))
 		}
 
 		pieChart.centerText = NumberFormats.FormatToRuble(expenses)
@@ -308,23 +305,23 @@ class MainFragment : Fragment() {
 		val colors: ArrayList<Int> = ArrayList()
 
 		if (entries.count() == 1 && entries[0].value == 1f){
-			colors.add(getColor(requireContext(),R.color.gray_dark))
+			colors.add(getColor(requireContext(), R.color.gray_dark))
 		}
 		else{
 			colors.addAll(
 				listOf(
-					getColor(requireContext(),R.color.orange_dark),
-					getColor(requireContext(),R.color.violet_dark),
-					getColor(requireContext(),R.color.blue_light),
-					getColor(requireContext(),R.color.chocolate),
-					getColor(requireContext(),R.color.gold),
-					getColor(requireContext(),R.color.green_light),
-					getColor(requireContext(),R.color.red_crimson),
-					getColor(requireContext(),R.color.blue_medium),
-					getColor(requireContext(),R.color.green_dark),
-					getColor(requireContext(),R.color.gold_dark),
-					getColor(requireContext(),R.color.violet_medium),
-					getColor(requireContext(),R.color.blue_dark),
+					getColor(requireContext(), R.color.orange_dark),
+					getColor(requireContext(), R.color.violet_dark),
+					getColor(requireContext(), R.color.blue_light),
+					getColor(requireContext(), R.color.chocolate),
+					getColor(requireContext(), R.color.gold),
+					getColor(requireContext(), R.color.green_light),
+					getColor(requireContext(), R.color.red_crimson),
+					getColor(requireContext(), R.color.blue_medium),
+					getColor(requireContext(), R.color.green_dark),
+					getColor(requireContext(), R.color.gold_dark),
+					getColor(requireContext(), R.color.violet_medium),
+					getColor(requireContext(), R.color.blue_dark),
 				))
 		}
 
@@ -339,7 +336,7 @@ class MainFragment : Fragment() {
 
 	@RequiresApi(Build.VERSION_CODES.O)
 	fun enableDebug() {
-		db.DbDebugMode()
+		db.dbDebugMode()
 
 		updateData()
 

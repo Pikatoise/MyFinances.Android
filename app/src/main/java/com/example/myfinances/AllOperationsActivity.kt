@@ -3,9 +3,7 @@ package com.example.myfinances
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import com.example.myfinances.databinding.ActivityAllOperationsBinding
-import java.util.Calendar
 
 class AllOperationsActivity : AppCompatActivity() {
 	private lateinit var binding: ActivityAllOperationsBinding

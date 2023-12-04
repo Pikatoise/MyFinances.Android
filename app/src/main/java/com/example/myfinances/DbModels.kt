@@ -4,7 +4,6 @@ import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.RequiresApi
-import kotlinx.serialization.Serializable
 
 data class Operation(var id: Int, var type: Int,var title: String,var amount: Double,var periodId: Int):
 	Parcelable {
@@ -68,6 +67,42 @@ data class Period(var id: Int, var year: Int, var month: Int, var isCurrent: Boo
 		}
 
 		override fun newArray(size: Int): Array<Period?> {
+			return arrayOfNulls(size)
+		}
+	}
+}
+
+data class Plan(var id: Int, var name: String, var date: String, var type: Int, var status: Boolean):
+	Parcelable {
+	@RequiresApi(Build.VERSION_CODES.Q)
+	constructor(parcel: Parcel) : this(
+		parcel.readInt(),
+		parcel.readString() as String,
+		parcel.readString() as String,
+		parcel.readInt(),
+		parcel.readBoolean()
+	)
+
+	@RequiresApi(Build.VERSION_CODES.Q)
+	override fun writeToParcel(parcel: Parcel, flags: Int) {
+		parcel.writeInt(id)
+		parcel.writeString(name)
+		parcel.writeString(date)
+		parcel.writeInt(type)
+		parcel.writeBoolean(status)
+	}
+
+	override fun describeContents(): Int {
+		return 0
+	}
+
+	companion object CREATOR : Parcelable.Creator<Plan> {
+		@RequiresApi(Build.VERSION_CODES.Q)
+		override fun createFromParcel(parcel: Parcel): Plan {
+			return Plan(parcel)
+		}
+
+		override fun newArray(size: Int): Array<Plan?> {
 			return arrayOfNulls(size)
 		}
 	}

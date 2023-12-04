@@ -10,7 +10,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import java.time.Month
 
 class DetailedListAdapter(context: Context, dataArrayList: ArrayList<DetailedListData?>?) :
 	ArrayAdapter<DetailedListData?>(context, R.layout.detailed_list_item, dataArrayList!!) {

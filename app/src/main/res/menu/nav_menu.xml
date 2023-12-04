@@ -12,6 +12,11 @@
             android:icon="@drawable/ic_house" />
 
         <item
+            android:id="@+id/item_plan"
+            android:title="План расходов"
+            android:icon="@drawable/ic_calendar" />
+
+        <item
             android:id="@+id/item_tips"
             android:title="Советы"
             android:icon="@drawable/ic_lightbulb" />

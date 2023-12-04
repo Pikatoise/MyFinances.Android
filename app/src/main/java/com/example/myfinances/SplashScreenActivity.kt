@@ -3,7 +3,6 @@ package com.example.myfinances
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Window
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.myfinances.databinding.ActivitySplashScreenBinding
 
