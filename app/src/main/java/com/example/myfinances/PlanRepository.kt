@@ -49,4 +49,31 @@ class PlanRepository(context: Context) {
 
 		return plan
 	}
+
+	public fun getAllPlans(): ArrayList<Plan>{
+		var plans : ArrayList<Plan> = arrayListOf()
+
+		var cursor = mDb.rawQuery(
+			"SELECT * FROM [plan]",
+			null)
+
+		if (cursor != null && cursor.count > 0){
+			cursor.moveToFirst()
+
+			while (!cursor.isAfterLast) {
+				var id = cursor.getInt(0)
+				var name = cursor.getString(1)
+				var date = cursor.getString(2)
+				var status = cursor.getInt(3) == 1
+				var type = cursor.getInt(4)
+
+				plans.add(Plan(id,name,date,type,status))
+
+				cursor.moveToNext()
+			}
+		}
+		cursor.close()
+
+		return plans;
+	}
 }

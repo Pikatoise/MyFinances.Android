@@ -1,16 +1,21 @@
 package com.example.myfinances
 
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import com.example.myfinances.databinding.FragmentPlanBinding
+import java.time.LocalDate
+import kotlin.collections.ArrayList
 
 class PlanFragment : Fragment() {
 	private lateinit var binding: FragmentPlanBinding
 	private lateinit var db: PlanRepository
 
+	@RequiresApi(Build.VERSION_CODES.O)
 	override fun onCreateView(
 		inflater: LayoutInflater, container: ViewGroup?,
 		savedInstanceState: Bundle?
@@ -19,8 +24,65 @@ class PlanFragment : Fragment() {
 
 		db = PlanRepository(this.requireContext())
 
-		binding.tvMain.text = db.getFirstPlan().name
+		fillAllOperations(binding)
 
 		return binding.root
+	}
+
+	@RequiresApi(Build.VERSION_CODES.O)
+	private fun fillAllOperations(binding: FragmentPlanBinding){
+		val plansDateData: ArrayList<PlanDateData?> = arrayListOf()
+		val plans = db.getAllPlans()
+		val dates = ArrayList<LocalDate?>()
+
+		for (i in 0..plans.size-1){
+			if (plans[i].date == "Без срока"){
+				dates.add(null)
+				break
+			}
+		}
+
+		for (i in 0..plans.size-1){
+			if (plans[i].date == "Без срока")
+				continue
+
+			val date = LocalDate.parse(plans[i].date)
+
+			if (!dates.contains(date))
+				dates.add(date)
+		}
+
+		dates.sortWith(nullsFirst(compareByDescending {
+			it.dayOfMonth * 24 + it.monthValue * 720 + it.year * 8640
+		}))
+
+		dates.forEach {
+			val dateStr =
+				if (it == null)
+					"Без срока"
+				else{
+					val year = "${it.year}"
+					val month = "${it.monthValue}"
+					val day =
+						if (it.dayOfMonth < 10)
+							"0${it.dayOfMonth}"
+						else
+							it.dayOfMonth
+
+					"${year}-${month}-${day}"
+				}
+
+			val currentDatePlans: ArrayList<Plan?>? = arrayListOf()
+
+			plans.forEach{
+				if (it.date == dateStr)
+					currentDatePlans!!.add(it)
+			}
+
+			plansDateData.add(PlanDateData(dateStr,currentDatePlans))
+		}
+
+		val listAdapter = PlanDateAdapter(this.requireContext(), plansDateData)
+		binding.lvPlans.adapter = listAdapter
 	}
 }
