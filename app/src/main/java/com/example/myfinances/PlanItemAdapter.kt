@@ -10,10 +10,18 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 
-class PlanItemAdapter(context: Context, dataArrayList: ArrayList<Plan?>?) :
+class PlanItemAdapter(
+	context: Context,
+	dataArrayList: ArrayList<Plan?>?,
+	statusCallBack: (status: Boolean, planId: Int)->Unit,
+	planClickCallBack: (planId: Int) -> Unit) :
+
 	ArrayAdapter<Plan?>(context, R.layout.plans_list_plan_item, dataArrayList!!) {
+		val cbStatus = statusCallBack
+		val cbClick = planClickCallBack
 
 	@RequiresApi(Build.VERSION_CODES.O)
 	override fun getView(position: Int, view: View?, parent: ViewGroup): View {
@@ -42,10 +50,17 @@ class PlanItemAdapter(context: Context, dataArrayList: ArrayList<Plan?>?) :
 		val tvName = currentView!!.findViewById<TextView>(R.id.tv_plan_name)
 		val cbStatus = currentView.findViewById<CheckBox>(R.id.cb_plan_status)
 		val ivIcon = currentView.findViewById<ImageView>(R.id.iv_plan_icon)
+		val clPlanItem = currentView.findViewById<ConstraintLayout>(R.id.cl_plan_item)
 
 		tvName.text = planItem.name
-		cbStatus.isChecked = planItem.status
 		ivIcon.setImageResource(imageList[planItem.type])
+		cbStatus.isChecked = planItem.status
+		cbStatus.setOnClickListener {
+			cbStatus(cbStatus.isChecked,planItem.id)
+		}
+		clPlanItem.setOnClickListener {
+			cbClick(planItem.id)
+		}
 
 		return currentView
 	}

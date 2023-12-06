@@ -13,8 +13,15 @@ import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 
-class PlanDateAdapter (context: Context, dataArrayList: ArrayList<PlanDateData?>?) :
+class PlanDateAdapter (
+	context: Context,
+	dataArrayList: ArrayList<PlanDateData?>?,
+	statusCallBack: (status: Boolean, planId: Int) -> Unit,
+	planClickCallBack: (planId: Int) -> Unit) :
+
 	ArrayAdapter<PlanDateData?>(context, R.layout.plans_list_date_item, dataArrayList!!) {
+ 	val cbStatus = statusCallBack
+	val cbClick = planClickCallBack
 
 	@RequiresApi(Build.VERSION_CODES.O)
 	override fun getView(position: Int, view: View?, parent: ViewGroup): View {
@@ -29,9 +36,9 @@ class PlanDateAdapter (context: Context, dataArrayList: ArrayList<PlanDateData?>
 		val tvList = currentView.findViewById<ListView>(R.id.lv_plans)
 		val clMain = currentView.findViewById<ConstraintLayout>(R.id.cl_main)
 
-		clMain.layoutParams.height = 100 + planDateItem!!.items!!.count() * 190
+		clMain.layoutParams.height = 100 + planDateItem!!.items!!.count() * 195
 		tvDate.text = planDateItem!!.date
-		val planItemsAdapter = PlanItemAdapter(context,planDateItem.items)
+		val planItemsAdapter = PlanItemAdapter(context,planDateItem.items,cbStatus,cbClick)
 		tvList.adapter = planItemsAdapter
 
 		return currentView

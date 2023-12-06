@@ -181,12 +181,12 @@ class MainFragment : Fragment() {
 		binding.lvOperationsMonth.isClickable = true
 
 		binding.lvOperationsMonth.setOnItemClickListener { _, _, position, _ ->
-			val dialogRemove = DialogRemoveOperation {
+			val dialogRemove = DialogRemoveItem( "Удалить операцию?") {
 				db.removeOperation(operationsList[position].id)
 
 				updateData()
 
-				Toast.makeText(activity,"Готово", Toast.LENGTH_SHORT).show()
+				Toast.makeText(activity, "Готово", Toast.LENGTH_SHORT).show()
 			}
 			val manager = parentFragmentManager
 			dialogRemove.show(manager,"removeDialog")

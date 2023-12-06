@@ -28,6 +28,4 @@
     <string name="email"><u>wierwolf@inbox.ru</u></string>
     <string name="tips_title"><b>Современный человек</b>- финансово <b>безграмотен</b>. Управление финансами, одно из <b>важнейших умений</b>, которым мы пользуемся <b>всю</b> свою жизнь. \n\nНо финансовой грамотности <b>не учат</b> в школе, каждый человек должен <b>своими силами</b> обуздать это умение. \n\nСледующие <b>10 шагов</b> помогут вам <b>правильно</b> тратить, сохранять и вкладывать</string>
     <string name="tips_quote">\"Остерегайтесь мелких и напрасных расходов, ибо маленькая течь может потопить большой корабль.\"</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

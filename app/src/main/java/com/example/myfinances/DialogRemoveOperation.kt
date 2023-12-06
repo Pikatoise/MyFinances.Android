@@ -6,22 +6,24 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 
-class DialogRemoveOperation constructor(callBackSuccess: () -> Unit) : DialogFragment() {
-	private lateinit var callBack: () -> Unit
+class DialogRemoveItem constructor(message: String,callBackSuccess: () -> Unit) : DialogFragment() {
+	private lateinit var _callBack: () -> Unit
+	private lateinit var _message: String
 
 	init {
-		callBack = callBackSuccess
+		_callBack = callBackSuccess
+		_message = message
 	}
 
 	override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 		return activity?.let {
 			val builder = AlertDialog.Builder(it)
 			builder.setTitle("Подтверждение")
-				.setMessage("Удалить операцию?")
+				.setMessage(_message)
 				.setIcon(R.drawable.ic_trash)
 				.setCancelable(true)
 				.setPositiveButton("Удалить") { _, _ ->
-					callBack()
+					_callBack()
 				}
 				.setNegativeButton("Отмена") { _, _ ->
 				}

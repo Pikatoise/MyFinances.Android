@@ -76,4 +76,15 @@ class PlanRepository(context: Context) {
 
 		return plans;
 	}
+
+	public fun changePlanStatus(planId: Int, newStatus: Boolean) {
+		val newStatusInt: Int = if (newStatus) 1 else 0
+
+		mDb.execSQL("UPDATE plan SET Status = $newStatusInt WHERE Id = $planId")
+	}
+
+	public fun removePlan(id: Int){
+		mDb.execSQL(
+			"DELETE FROM plan WHERE Id=${id}")
+	}
 }
