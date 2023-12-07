@@ -73,7 +73,18 @@ class PlanAddActivity : AppCompatActivity() {
 					return@setOnClickListener
 				}
 
-				val date = if (cbPlanAddDate.isChecked) "Без срока" else "${dpPlan.year}-${dpPlan.month+1}-${dpPlan.dayOfMonth}"
+				val day =
+					if (dpPlan.dayOfMonth < 10)
+						"0${dpPlan.dayOfMonth}"
+					else
+						dpPlan.dayOfMonth
+				val month =
+					if (dpPlan.month + 1 < 10)
+						"0${dpPlan.month + 1}"
+					else
+						"${dpPlan.month + 1}"
+
+				val date = if (cbPlanAddDate.isChecked) "Без срока" else "${dpPlan.year}-${month}-${day}"
 				val type = spinnerType.selectedItemPosition
 				val status = false
 

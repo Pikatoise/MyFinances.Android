@@ -112,7 +112,13 @@ class PlanFragment : Fragment() {
 					"Без срока"
 				else{
 					val year = "${it.year}"
-					val month = "${it.monthValue}"
+
+					val month =
+						if (it.monthValue < 10)
+							"0${it.monthValue}"
+						else
+							"${it.monthValue}"
+
 					val day =
 						if (it.dayOfMonth < 10)
 							"0${it.dayOfMonth}"
@@ -151,7 +157,5 @@ class PlanFragment : Fragment() {
 			}
 		)
 		binding.lvPlans.adapter = listAdapter
-
-		Toast.makeText(activity,"Обновлено",Toast.LENGTH_SHORT).show()
 	}
 }
