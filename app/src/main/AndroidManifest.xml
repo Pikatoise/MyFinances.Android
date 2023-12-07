@@ -16,6 +16,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".PlanAddActivity"
+            android:exported="false" />
+        <activity
             android:name=".AllOperationsActivity"
             android:exported="false" />
         <activity

@@ -84,7 +84,15 @@ class PlanRepository(context: Context) {
 	}
 
 	public fun removePlan(id: Int){
+		mDb.execSQL("DELETE FROM plan WHERE Id=${id}")
+	}
+
+	public fun removeAllPlans(){
+		mDb.execSQL("DELETE FROM [plan]")
+	}
+
+	public fun addPlan(newPlan: Plan){
 		mDb.execSQL(
-			"DELETE FROM plan WHERE Id=${id}")
+			"INSERT INTO plan(Name,Date,Type,Status) VALUES ('${newPlan.name}','${newPlan.date}','${newPlan.type}','${if (newPlan.status) 1 else 0}')")
 	}
 }

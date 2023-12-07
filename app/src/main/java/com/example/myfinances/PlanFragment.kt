@@ -1,5 +1,7 @@
 package com.example.myfinances
 
+import android.content.Intent
+import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -25,16 +27,63 @@ class PlanFragment : Fragment() {
 
 		db = PlanRepository(this.requireContext())
 
-		fillAllOperations(binding)
+		binding.buttonPlanClear.setOnClickListener {
+			val dialogRemove = DialogRemoveItem("Очистить историю?") {
+				db.removeAllPlans()
+
+				fillAllOperations(binding)
+
+				Toast.makeText(activity,"Готово", Toast.LENGTH_SHORT).show()
+			}
+			val manager = parentFragmentManager
+			dialogRemove.show(manager,"removeDialog")
+		}
+
+		binding.rlPlanInfo.setOnClickListener {
+			val dialogInfo = DialogInfo(
+				"Стремительный ритм жизни и обилие дел позволяет легко забывать о " +
+				"планируемых покупках. Использование планировщика расходов поможет " +
+				"вам организовать свои расходы и не забыть о покупке важных вещей " +
+				"или услуг в будущем." +
+				"\n\n	- Добавляйте планируемые покупки на определенные даты" +
+				"\n\n	- Оставляйте необходимые расходы без срока, чтобы не забыть о них в будущем" +
+				"\n\n	- Отмечайте уже завершенные планы" +
+				"\n\n* Очистка истории полностью удалит все задачи")
+			val manager = parentFragmentManager
+			dialogInfo.show(manager,"infoDialog")
+		}
+
+		binding.buttonPlanPlus.setOnClickListener {
+			val intent = Intent(activity,PlanAddActivity::class.java)
+
+			startActivity(intent)
+		}
 
 		return binding.root
 	}
 
 	@RequiresApi(Build.VERSION_CODES.O)
+	override fun onResume()
+	{
+		fillAllOperations(binding)
+
+		super.onResume()
+	}
+	@RequiresApi(Build.VERSION_CODES.O)
 	private fun fillAllOperations(binding: FragmentPlanBinding){
 		val plansDateData: ArrayList<PlanDateData?> = arrayListOf()
-		val plans = db.getAllPlans()
 		val dates = ArrayList<LocalDate?>()
+		val plans = db.getAllPlans()
+
+		if (plans.size > 0){
+			binding.tvPlanEmpty.visibility = View.INVISIBLE
+			binding.lvPlans.visibility = View.VISIBLE
+		}
+		else{
+			binding.tvPlanEmpty.visibility = View.VISIBLE
+			binding.lvPlans.visibility = View.INVISIBLE
+			return
+		}
 
 		for (i in 0..plans.size-1){
 			if (plans[i].date == "Без срока"){
@@ -102,5 +151,7 @@ class PlanFragment : Fragment() {
 			}
 		)
 		binding.lvPlans.adapter = listAdapter
+
+		Toast.makeText(activity,"Обновлено",Toast.LENGTH_SHORT).show()
 	}
 }
