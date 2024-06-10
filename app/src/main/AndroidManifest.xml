@@ -16,16 +16,22 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".PlanAddActivity"
+            android:name=".ui.activities.RegActivity"
             android:exported="false" />
         <activity
-            android:name=".AllOperationsActivity"
+            android:name=".ui.activities.AuthActivity"
             android:exported="false" />
         <activity
-            android:name=".OperationActivity"
+            android:name=".ui.activities.PlanAddActivity"
             android:exported="false" />
         <activity
-            android:name=".SplashScreenActivity"
+            android:name=".ui.activities.AllOperationsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.OperationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.SplashScreenActivity"
             android:exported="true"
             android:theme="@style/Theme.SplashScreen">
             <intent-filter>
@@ -35,7 +41,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.activities.MainActivity"
             android:exported="true" />
     </application>
 

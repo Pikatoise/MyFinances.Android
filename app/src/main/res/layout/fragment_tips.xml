@@ -7,7 +7,7 @@
     android:paddingTop="40dp"
     android:paddingHorizontal="20dp"
     android:background="@drawable/shape_gradient_main"
-    tools:context=".TipsFragment">
+    tools:context=".ui.fragments.TipsFragment">
 
     <ScrollView
         android:id="@+id/myView"

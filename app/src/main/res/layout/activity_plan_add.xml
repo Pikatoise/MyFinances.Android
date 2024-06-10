@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".PlanAddActivity"
+    tools:context=".ui.activities.PlanAddActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/shape_gradient_main">
@@ -131,7 +131,7 @@
                     android:layout_marginEnd="10dp"/>
 
                 <CheckBox
-                    android:id="@+id/cb_planAdd_date"
+                    android:id="@+id/cb_plan_add_date"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:scaleX="1.4"

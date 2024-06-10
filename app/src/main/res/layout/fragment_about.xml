@@ -7,10 +7,9 @@
     android:paddingTop="100dp"
     android:paddingHorizontal="20dp"
     android:background="@color/green_main"
-    tools:context=".AboutFragment">
+    tools:context=".ui.fragments.AboutFragment">
 
     <ScrollView
-        android:id="@+id/myView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -82,7 +81,6 @@
                     app:layout_constraintEnd_toEndOf="parent"/>
 
                     <TextView
-                        android:id="@+id/tv_programm_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Free software"
@@ -96,7 +94,6 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/cs_developer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"

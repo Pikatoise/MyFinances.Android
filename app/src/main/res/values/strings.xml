@@ -3,7 +3,6 @@
     <string name="usd_title">USD</string>
     <string name="usd_symbol">$</string>
     <string name="euro_symbol">€</string>
-    <string name="rub_symbol">₽</string>
     <string name="usd_to_ruble">60,5 ₽</string>
     <string name="euro_title">Euro</string>
     <string name="euro_to_ruble">70,10 ₽</string>
@@ -12,18 +11,6 @@
     <string name="main_operation_minus">Расход</string>
     <string name="main_month_operations_title">Операции за месяц</string>
     <string name="main_all_operations">Все\nоперации</string>
-    <string name="category_alcohol">Алкоголь</string>
-    <string name="category_bank">Банк</string>
-    <string name="category_cafe">Кафе</string>
-    <string name="category_clothes">Одежда</string>
-    <string name="category_fun">Развлечения</string>
-    <string name="category_gift">Подарки</string>
-    <string name="category_house">Дом</string>
-    <string name="category_medical">Медицина</string>
-    <string name="category_products">Продукты</string>
-    <string name="category_salary">Зарплата</string>
-    <string name="category_study">Учеба</string>
-    <string name="category_taxi">Транспорт</string>
     <string name="email"><u>wierwolf@inbox.ru</u></string>
     <string name="tips_title"><b>Современный человек</b>- финансово <b>безграмотен</b>. Управление финансами, одно из <b>важнейших умений</b>, которым мы пользуемся <b>всю</b> свою жизнь. \n\nНо финансовой грамотности <b>не учат</b> в школе, каждый человек должен <b>своими силами</b> обуздать это умение. \n\nСледующие <b>10 шагов</b> помогут вам <b>правильно</b> тратить, сохранять и вкладывать</string>
     <string name="tips_quote">\"Остерегайтесь мелких и напрасных расходов, ибо маленькая течь может потопить большой корабль.\"</string>

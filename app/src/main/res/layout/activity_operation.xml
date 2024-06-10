@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".OperationActivity"
+    tools:context=".ui.activities.OperationActivity"
     android:paddingTop="50dp"
     android:background="@drawable/shape_gradient_main">
 
