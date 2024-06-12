@@ -5,6 +5,35 @@ import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.RequiresApi
 
+data class AccessData(var accessToken: String?, var refreshToken: String?, var userId: Int):
+	Parcelable {
+	constructor(parcel: Parcel) : this(
+		parcel.readString(),
+		parcel.readString(),
+		parcel.readInt()
+	)
+
+	override fun writeToParcel(parcel: Parcel, flags: Int) {
+		parcel.writeString(accessToken)
+		parcel.writeString(refreshToken)
+		parcel.writeInt(userId)
+	}
+
+	override fun describeContents(): Int {
+		return 0
+	}
+
+	companion object CREATOR : Parcelable.Creator<AccessData> {
+		override fun createFromParcel(parcel: Parcel): AccessData {
+			return AccessData(parcel)
+		}
+
+		override fun newArray(size: Int): Array<AccessData?> {
+			return arrayOfNulls(size)
+		}
+	}
+}
+
 data class Operation(var id: Int, var type: Int,var title: String,var amount: Double,var periodId: Int):
 	Parcelable {
 	constructor(parcel: Parcel) : this(

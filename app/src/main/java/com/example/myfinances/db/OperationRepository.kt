@@ -11,11 +11,11 @@ import java.util.Calendar
 
 
 class OperationRepository(context: Context){
-	private var mDbHelper: DatabaseHelper
+	private var mDbHelper: DatabaseHelperOld
 	private var mDb: SQLiteDatabase
 
 	init{
-		mDbHelper = DatabaseHelper(context)
+		mDbHelper = DatabaseHelperOld(context)
 
 		try {
 			mDbHelper.updateDataBase()

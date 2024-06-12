@@ -8,11 +8,11 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 
 class PlanRepository(context: Context) {
-	private var mDbHelper: DatabaseHelper
+	private var mDbHelper: DatabaseHelperOld
 	private var mDb: SQLiteDatabase
 
 	init{
-		mDbHelper = DatabaseHelper(context)
+		mDbHelper = DatabaseHelperOld(context)
 
 		try {
 			mDbHelper.updateDataBase()
