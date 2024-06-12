@@ -2,8 +2,12 @@ package com.example.myfinances.db
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import android.os.Build
+import androidx.annotation.RequiresApi
 import java.io.IOException
 import java.sql.SQLException
+import java.time.LocalDateTime
+import java.util.Date
 
 class AccessDataRepository(context: Context){
     private var mDbHelper: DatabaseHelper
@@ -82,6 +86,26 @@ class AccessDataRepository(context: Context){
         return refreshToken
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    public fun getLastRefresh(): LocalDateTime? {
+        var lastRefresh: String? = null
+
+        var cursor = mDb.rawQuery(
+            "SELECT lastRefresh FROM AccessData",
+            null
+        )
+
+        if (cursor != null && cursor.count > 0){
+            cursor.moveToFirst()
+
+            lastRefresh = cursor.getString(2)
+        }
+
+        cursor.close()
+
+        return LocalDateTime.parse(lastRefresh)
+    }
+
     public fun updateUserId(id: Int) {
         mDb.execSQL("UPDATE AccessData SET userId = ${id}")
     }
@@ -92,5 +116,10 @@ class AccessDataRepository(context: Context){
 
     public fun updateRefreshToken(token: Int) {
         mDb.execSQL("UPDATE AccessData SET refreshToken = ${token}")
+    }
+
+    public fun updateLastRefreshToken(lastRefresh: LocalDateTime) {
+        val lastRefreshStr = lastRefresh.toString()
+        mDb.execSQL("UPDATE AccessData SET refreshToken = ${lastRefreshStr}")
     }
 }
