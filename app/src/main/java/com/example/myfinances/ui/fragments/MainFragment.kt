@@ -23,6 +23,8 @@ import com.example.myfinances.ui.activities.OperationActivity
 import com.example.myfinances.db.OperationRepository
 import com.example.myfinances.R
 import com.example.myfinances.databinding.FragmentMainBinding
+import com.example.myfinances.db.AccessData
+import com.example.myfinances.db.AccessDataRepository
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
