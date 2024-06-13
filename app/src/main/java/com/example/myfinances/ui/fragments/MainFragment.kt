@@ -22,6 +22,7 @@ import com.example.myfinances.db.Operation
 import com.example.myfinances.ui.activities.OperationActivity
 import com.example.myfinances.db.OperationRepository
 import com.example.myfinances.R
+import com.example.myfinances.api.repositories.ApiAuthRepository
 import com.example.myfinances.databinding.FragmentMainBinding
 import com.example.myfinances.db.AccessData
 import com.example.myfinances.db.AccessDataRepository
@@ -30,6 +31,10 @@ import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import okhttp3.Call
@@ -51,6 +56,7 @@ class MainFragment : Fragment() {
 	private lateinit var db: OperationRepository
 	private lateinit var operationsList: ArrayList<Operation>
 	private var dataArrayList = ArrayList<ListData?>()
+	private lateinit var apiAuthRepo: ApiAuthRepository
 	private var debugCounter = 0
 	private val imageList = intArrayOf(
 		R.drawable.ic_alcohol,
@@ -75,7 +81,41 @@ class MainFragment : Fragment() {
 	): View {
 		binding = FragmentMainBinding.inflate(inflater,container,false)
 
+		apiAuthRepo = ApiAuthRepository()
+
 		binding.apply {
+			binding.tvCurrencyUsd.setOnClickListener {
+				val request = CoroutineScope(Dispatchers.Main).async {
+					apiAuthRepo.sendAuthRequest("test1","test123").await()
+				}
+
+				request.invokeOnCompletion {
+					if (request.isCompleted){
+						val result = runBlocking { request.await() }
+
+						if (result.isSuccessful)
+							Toast.makeText(
+								this@MainFragment.requireContext(),
+								result.success?.data?.userId.toString(),
+								Toast.LENGTH_SHORT)
+							.show()
+						else
+							Toast.makeText(
+								this@MainFragment.requireContext(),
+								"${result.error?.status}\n\n${result.error?.title}\n\n${result.error?.errors?.code}",
+								Toast.LENGTH_SHORT)
+							.show()
+					}
+					else
+						Toast.makeText(
+							this@MainFragment.requireContext(),
+							"Ошибка запроса",
+							Toast.LENGTH_SHORT)
+						.show()
+				}
+
+			}
+
 			buttonPlus.setOnClickListener {
 				val intent = Intent(activity, OperationActivity::class.java)
 
