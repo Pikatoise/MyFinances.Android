@@ -22,7 +22,9 @@ import com.example.myfinances.db.Operation
 import com.example.myfinances.ui.activities.OperationActivity
 import com.example.myfinances.db.OperationRepository
 import com.example.myfinances.R
+import com.example.myfinances.Toasts
 import com.example.myfinances.api.repositories.ApiAuthRepository
+import com.example.myfinances.api.repositories.ApiTokenRepository
 import com.example.myfinances.databinding.FragmentMainBinding
 import com.example.myfinances.db.AccessData
 import com.example.myfinances.db.AccessDataRepository
@@ -57,7 +59,7 @@ class MainFragment : Fragment() {
 	private lateinit var operationsList: ArrayList<Operation>
 	private var dataArrayList = ArrayList<ListData?>()
 	private lateinit var apiAuthRepo: ApiAuthRepository
-	private var debugCounter = 0
+	private lateinit var apiTokenRepo: ApiTokenRepository
 	private val imageList = intArrayOf(
 		R.drawable.ic_alcohol,
 		R.drawable.ic_products,
@@ -82,40 +84,9 @@ class MainFragment : Fragment() {
 		binding = FragmentMainBinding.inflate(inflater,container,false)
 
 		apiAuthRepo = ApiAuthRepository()
+		apiTokenRepo = ApiTokenRepository()
 
 		binding.apply {
-			binding.tvCurrencyUsd.setOnClickListener {
-				val request = CoroutineScope(Dispatchers.Main).async {
-					apiAuthRepo.sendAuthRequest("test1","test123").await()
-				}
-
-				request.invokeOnCompletion {
-					if (request.isCompleted){
-						val result = runBlocking { request.await() }
-
-						if (result.isSuccessful)
-							Toast.makeText(
-								this@MainFragment.requireContext(),
-								result.success?.data?.userId.toString(),
-								Toast.LENGTH_SHORT)
-							.show()
-						else
-							Toast.makeText(
-								this@MainFragment.requireContext(),
-								"${result.error?.status}\n\n${result.error?.title}\n\n${result.error?.errors?.code}",
-								Toast.LENGTH_SHORT)
-							.show()
-					}
-					else
-						Toast.makeText(
-							this@MainFragment.requireContext(),
-							"Ошибка запроса",
-							Toast.LENGTH_SHORT)
-						.show()
-				}
-
-			}
-
 			buttonPlus.setOnClickListener {
 				val intent = Intent(activity, OperationActivity::class.java)
 
@@ -135,23 +106,6 @@ class MainFragment : Fragment() {
 
 				startActivityForResult(intent,0)
 			}
-
-			// For Debug
-
-			/*tvCurrencyUsd.setOnClickListener{
-				debugCounter++
-
-				if (debugCounter == 5){
-					enableDebug()
-				}
-			}
-
-			tvMonthOperatons.setOnClickListener {
-				val operationsCount = db.getOperationsCount()
-				val periodsCount = db.getPeriodsCount()
-
-				Toast.makeText(activity,"Операций $operationsCount\nПериодов $periodsCount",Toast.LENGTH_SHORT).show()
-			}*/
 
 			llAllOperations.setOnClickListener {
 				val intent = Intent(activity, AllOperationsActivity::class.java)
@@ -380,14 +334,5 @@ class MainFragment : Fragment() {
 		pieChart.data = data
 
 		pieChart.invalidate()
-	}
-
-	@RequiresApi(Build.VERSION_CODES.O)
-	fun enableDebug() {
-		db.dbDebugMode()
-
-		updateData()
-
-		Toast.makeText(requireContext(),"Debug mode", Toast.LENGTH_SHORT).show()
 	}
 }
