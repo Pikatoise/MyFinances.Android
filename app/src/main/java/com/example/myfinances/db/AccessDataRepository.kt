@@ -59,7 +59,7 @@ class AccessDataRepository(context: Context){
         if (cursor != null && cursor.count > 0){
             cursor.moveToFirst()
 
-            accessToken = cursor.getString(1)
+            accessToken = cursor.getString(0)
         }
 
         cursor.close()
@@ -78,7 +78,7 @@ class AccessDataRepository(context: Context){
         if (cursor != null && cursor.count > 0){
             cursor.moveToFirst()
 
-            refreshToken = cursor.getString(2)
+            refreshToken = cursor.getString(0)
         }
 
         cursor.close()
@@ -87,7 +87,7 @@ class AccessDataRepository(context: Context){
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    public fun getLastRefresh(): LocalDateTime? {
+    public fun getLastRefresh(): String? {
         var lastRefresh: String? = null
 
         var cursor = mDb.rawQuery(
@@ -98,23 +98,23 @@ class AccessDataRepository(context: Context){
         if (cursor != null && cursor.count > 0){
             cursor.moveToFirst()
 
-            lastRefresh = cursor.getString(2)
+            lastRefresh = cursor.getString(0)
         }
 
         cursor.close()
 
-        return LocalDateTime.parse(lastRefresh)
+        return lastRefresh
     }
 
     public fun updateUserId(id: Int) {
         mDb.execSQL("UPDATE AccessData SET userId = ${id}")
     }
 
-    public fun updateAccessToken(token: Int) {
+    public fun updateAccessToken(token: String) {
         mDb.execSQL("UPDATE AccessData SET accessToken = ${token}")
     }
 
-    public fun updateRefreshToken(token: Int) {
+    public fun updateRefreshToken(token: String) {
         mDb.execSQL("UPDATE AccessData SET refreshToken = ${token}")
     }
 
