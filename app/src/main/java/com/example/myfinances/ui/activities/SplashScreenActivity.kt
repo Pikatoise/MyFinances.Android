@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.myfinances.R
@@ -61,7 +62,7 @@ class SplashScreenActivity : AppCompatActivity() {
 
 							accessDataRepo.updateAccessToken(newTokens.accessToken)
 							accessDataRepo.updateRefreshToken(newTokens.refreshToken)
-							accessDataRepo.updateLastRefreshToken(LocalDateTime.now())
+							accessDataRepo.updateLastRefresh(LocalDateTime.now())
 
 							i = Intent(this, MainActivity::class.java)
 						}

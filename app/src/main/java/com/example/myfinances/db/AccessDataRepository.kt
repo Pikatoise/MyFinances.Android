@@ -111,15 +111,15 @@ class AccessDataRepository(context: Context){
     }
 
     public fun updateAccessToken(token: String) {
-        mDb.execSQL("UPDATE AccessData SET accessToken = ${token}")
+        mDb.execSQL("UPDATE AccessData SET accessToken = '${token}'")
     }
 
     public fun updateRefreshToken(token: String) {
-        mDb.execSQL("UPDATE AccessData SET refreshToken = ${token}")
+        mDb.execSQL("UPDATE AccessData SET refreshToken = '${token}'")
     }
 
-    public fun updateLastRefreshToken(lastRefresh: LocalDateTime) {
+    public fun updateLastRefresh(lastRefresh: LocalDateTime) {
         val lastRefreshStr = lastRefresh.toString()
-        mDb.execSQL("UPDATE AccessData SET refreshToken = ${lastRefreshStr}")
+        mDb.execSQL("UPDATE AccessData SET lastRefresh = '${lastRefreshStr}'")
     }
 }

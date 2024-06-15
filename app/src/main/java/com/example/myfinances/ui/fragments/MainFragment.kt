@@ -60,6 +60,7 @@ class MainFragment : Fragment() {
 	private var dataArrayList = ArrayList<ListData?>()
 	private lateinit var apiAuthRepo: ApiAuthRepository
 	private lateinit var apiTokenRepo: ApiTokenRepository
+	private lateinit var accessDataRepo: AccessDataRepository
 	private val imageList = intArrayOf(
 		R.drawable.ic_alcohol,
 		R.drawable.ic_products,
@@ -85,8 +86,17 @@ class MainFragment : Fragment() {
 
 		apiAuthRepo = ApiAuthRepository()
 		apiTokenRepo = ApiTokenRepository()
+		accessDataRepo = AccessDataRepository(this@MainFragment.requireContext())
 
 		binding.apply {
+//			tvCurrencyUsd.setOnClickListener {
+//				val access = accessDataRepo.getAccessToken()
+//				val refresh = accessDataRepo.getRefreshToken()
+//				val lastRefresh = accessDataRepo.getLastRefresh()
+//
+//				Toast.makeText(this@MainFragment.requireContext(), lastRefresh, Toast.LENGTH_SHORT).show()
+//			}
+
 			buttonPlus.setOnClickListener {
 				val intent = Intent(activity, OperationActivity::class.java)
 

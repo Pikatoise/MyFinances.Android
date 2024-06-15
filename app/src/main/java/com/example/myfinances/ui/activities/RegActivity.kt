@@ -118,7 +118,7 @@ class RegActivity : AppCompatActivity() {
                         finish()
 
                         overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out)
-                    }, 1000)
+                    }, 1500)
                 }
                 else {
                     progressDialog.setContentView(R.layout.failed_dialog)
@@ -129,7 +129,7 @@ class RegActivity : AppCompatActivity() {
                         val errorDesc = result.error!!.errors.description
 
                         Toast.makeText(this, errorDesc, Toast.LENGTH_SHORT).show()
-                    }, 1000)
+                    }, 1500)
                 }
             }
         }
