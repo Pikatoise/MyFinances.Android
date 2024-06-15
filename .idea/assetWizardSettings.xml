@@ -329,8 +329,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="ic_check" />
-                            <entry key="sourceFile" value="C:\Users\Pikatoise\Desktop\check.svg" />
+                            <entry key="outputName" value="ic_user" />
+                            <entry key="sourceFile" value="C:\Users\pika\Desktop\ic_user.svg" />
                           </map>
                         </option>
                       </PersistentState>
