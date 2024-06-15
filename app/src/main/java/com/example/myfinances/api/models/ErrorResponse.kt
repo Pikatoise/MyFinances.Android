@@ -9,6 +9,11 @@ data class ErrorResponse(
 
 public val RequestError = ErrorResponse(
     "",
-    "",
-    0,
-    ErrorDetail("","",0))
+    "Bad Request",
+    500,
+    ErrorDetail(
+        "Request.Failed",
+        "Неудачный запрос",
+        0
+    )
+)

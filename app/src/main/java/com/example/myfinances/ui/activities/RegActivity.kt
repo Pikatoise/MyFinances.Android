@@ -51,6 +51,18 @@ class RegActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            if (login.length > 20){
+                Toasts.loginLong(this).show()
+
+                return@setOnClickListener
+            }
+
+            if (login.contains(' ')){
+                Toasts.loginCantContainSpace(this).show()
+
+                return@setOnClickListener
+            }
+
             if (password.isBlank()){
                 Toasts.passwordEmpty(this).show()
 
@@ -59,6 +71,18 @@ class RegActivity : AppCompatActivity() {
 
             if (password.length < 6){
                 Toasts.passwordShort(this).show()
+
+                return@setOnClickListener
+            }
+
+            if (password.length > 30){
+                Toasts.passwordLong(this).show()
+
+                return@setOnClickListener
+            }
+
+            if (password.contains(' ')){
+                Toasts.passwordCantContainSpace(this).show()
 
                 return@setOnClickListener
             }
