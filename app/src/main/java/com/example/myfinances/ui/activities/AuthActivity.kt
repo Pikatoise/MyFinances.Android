@@ -33,7 +33,7 @@ class AuthActivity : AppCompatActivity() {
 
         binding = ActivityAuthBinding.inflate(layoutInflater)
         apiAuthRepository = ApiAuthRepository()
-        accessDataRepo = AccessDataRepository(this)
+        accessDataRepo = AccessDataRepository(getSharedPreferences(AccessDataRepository.preferencesName, MODE_PRIVATE))
 
         binding.tvAuthRegistration.setOnClickListener {
             val i = Intent(this, RegActivity::class.java)

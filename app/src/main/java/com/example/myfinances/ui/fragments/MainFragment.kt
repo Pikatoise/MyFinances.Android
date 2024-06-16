@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import androidx.core.content.ContextCompat.getColor
 import com.example.myfinances.ui.activities.AllOperationsActivity
 import com.example.myfinances.ui.activities.AuthActivity
@@ -26,7 +27,6 @@ import com.example.myfinances.Toasts
 import com.example.myfinances.api.repositories.ApiAuthRepository
 import com.example.myfinances.api.repositories.ApiTokenRepository
 import com.example.myfinances.databinding.FragmentMainBinding
-import com.example.myfinances.db.AccessData
 import com.example.myfinances.db.AccessDataRepository
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.PieChart
@@ -86,16 +86,17 @@ class MainFragment : Fragment() {
 
 		apiAuthRepo = ApiAuthRepository()
 		apiTokenRepo = ApiTokenRepository()
-		accessDataRepo = AccessDataRepository(this@MainFragment.requireContext())
+		val sharedPreferencesContext = this@MainFragment.requireContext().getSharedPreferences(AccessDataRepository.preferencesName, MODE_PRIVATE)
+		accessDataRepo = AccessDataRepository(sharedPreferencesContext)
 
 		binding.apply {
-//			tvCurrencyUsd.setOnClickListener {
-//				val access = accessDataRepo.getAccessToken()
-//				val refresh = accessDataRepo.getRefreshToken()
-//				val lastRefresh = accessDataRepo.getLastRefresh()
-//
-//				Toast.makeText(this@MainFragment.requireContext(), lastRefresh, Toast.LENGTH_SHORT).show()
-//			}
+			tvCurrencyUsd.setOnClickListener {
+				val access = accessDataRepo.getAccessToken()
+				val refresh = accessDataRepo.getRefreshToken()
+				val lastRefresh = accessDataRepo.getLastRefresh()
+
+				Toast.makeText(this@MainFragment.requireContext(), lastRefresh, Toast.LENGTH_SHORT).show()
+			}
 
 			buttonPlus.setOnClickListener {
 				val intent = Intent(activity, OperationActivity::class.java)

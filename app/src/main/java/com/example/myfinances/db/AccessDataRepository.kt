@@ -1,6 +1,7 @@
 package com.example.myfinances.db
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.database.sqlite.SQLiteDatabase
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -9,117 +10,63 @@ import java.sql.SQLException
 import java.time.LocalDateTime
 import java.util.Date
 
-class AccessDataRepository(context: Context){
-    private var mDbHelper: DatabaseHelper
-    private var mDb: SQLiteDatabase
-
-    init{
-        mDbHelper = DatabaseHelper(context)
-
-        try {
-            mDbHelper.updateDataBase()
-        } catch (mIOException: IOException) {
-            throw Error("UnableToUpdateDatabase")
-        }
-
-        mDb = try {
-            mDbHelper.writableDatabase
-        } catch (mSQLException: SQLException) {
-            throw mSQLException
-        }
+class AccessDataRepository(preferencesContext: SharedPreferences){
+    companion object {
+        public val preferencesName = "accessData"
     }
 
+    private val preferences = preferencesContext
+    
+    private val USER_ID_KEY = "userId"
+    private val ACCESS_TOKEN_KEY = "accessToken"
+    private val REFRESH_TOKEN_KEY = "refreshToken"
+    private val LAST_REFRESH_KEY = "lastRefresh"
+
     public fun getUserId(): Int {
-        var userId: Int = -1
-
-        var cursor = mDb.rawQuery(
-            "SELECT userId FROM AccessData",
-            null
-        )
-
-        if (cursor != null && cursor.count > 0){
-            cursor.moveToFirst()
-
-            userId = cursor.getInt(0)
-        }
-
-        cursor.close()
-
-        return userId
+        return preferences.getInt(USER_ID_KEY, -1)
     }
 
     public fun getAccessToken(): String? {
-        var accessToken: String? = null
-
-        var cursor = mDb.rawQuery(
-            "SELECT accessToken FROM AccessData",
-            null
-        )
-
-        if (cursor != null && cursor.count > 0){
-            cursor.moveToFirst()
-
-            accessToken = cursor.getString(0)
-        }
-
-        cursor.close()
-
-        return accessToken
+        return preferences.getString(ACCESS_TOKEN_KEY,  "")
     }
 
     public fun getRefreshToken(): String? {
-        var refreshToken: String? = null
-
-        var cursor = mDb.rawQuery(
-            "SELECT refreshToken FROM AccessData",
-            null
-        )
-
-        if (cursor != null && cursor.count > 0){
-            cursor.moveToFirst()
-
-            refreshToken = cursor.getString(0)
-        }
-
-        cursor.close()
-
-        return refreshToken
+        return preferences.getString(REFRESH_TOKEN_KEY, "")
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     public fun getLastRefresh(): String? {
-        var lastRefresh: String? = null
-
-        var cursor = mDb.rawQuery(
-            "SELECT lastRefresh FROM AccessData",
-            null
-        )
-
-        if (cursor != null && cursor.count > 0){
-            cursor.moveToFirst()
-
-            lastRefresh = cursor.getString(0)
-        }
-
-        cursor.close()
-
-        return lastRefresh
+        return preferences.getString(LAST_REFRESH_KEY, "")
     }
 
     public fun updateUserId(id: Int) {
-        mDb.execSQL("UPDATE AccessData SET userId = ${id}")
+        preferences.edit().apply{
+            putInt(USER_ID_KEY, id)
+
+            apply()
+        }
     }
 
     public fun updateAccessToken(token: String) {
-        mDb.execSQL("UPDATE AccessData SET accessToken = '${token}'")
+        preferences.edit().apply{
+            putString(ACCESS_TOKEN_KEY, token)
+
+            apply()
+        }
     }
 
     public fun updateRefreshToken(token: String) {
-        mDb.execSQL("UPDATE AccessData SET refreshToken = '${token}'")
+        preferences.edit().apply{
+            putString(REFRESH_TOKEN_KEY, token)
+
+            apply()
+        }
     }
 
     public fun updateLastRefresh(lastRefresh: LocalDateTime) {
-        val lastRefreshStr = lastRefresh.toString()
-        mDb.execSQL("UPDATE AccessData SET lastRefresh = '${lastRefreshStr}'")
+        preferences.edit().apply{
+            putString(LAST_REFRESH_KEY, lastRefresh.toString())
+
+            apply()
+        }
     }
 }

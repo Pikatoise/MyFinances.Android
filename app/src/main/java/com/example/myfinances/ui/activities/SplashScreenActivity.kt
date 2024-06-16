@@ -1,6 +1,8 @@
 package com.example.myfinances.ui.activities
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -23,7 +25,7 @@ class SplashScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 
-		accessDataRepo = AccessDataRepository(this)
+		accessDataRepo = AccessDataRepository(getSharedPreferences(AccessDataRepository.preferencesName, Context.MODE_PRIVATE))
 		apiTokenRepo = ApiTokenRepository()
 
 		theme.applyStyle(R.style.Theme_GreenNavBar,true)
