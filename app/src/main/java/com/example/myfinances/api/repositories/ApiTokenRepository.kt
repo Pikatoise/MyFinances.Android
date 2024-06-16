@@ -22,6 +22,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 import java.time.LocalDateTime
+import kotlin.math.exp
 
 class ApiTokenRepository {
     val client = ApiClient.instance as OkHttpClient
@@ -75,8 +76,10 @@ class ApiTokenRepository {
     @RequiresApi(Build.VERSION_CODES.O)
     fun checkAccessTokenExpired(refreshTime: LocalDateTime): Boolean{
         var isExpired = true
+        val currentTime = LocalDateTime.now()
+        val expiredTime = refreshTime.plusMinutes(accessTokenLifetimeMinutes.toLong())
 
-        if (refreshTime.isBefore(refreshTime.plusMinutes(accessTokenLifetimeMinutes.toLong())))
+        if (currentTime.isBefore(expiredTime))
             isExpired = false
 
         return isExpired
@@ -85,8 +88,10 @@ class ApiTokenRepository {
     @RequiresApi(Build.VERSION_CODES.O)
     fun checkRefreshTokenExpired(refreshTime: LocalDateTime): Boolean{
         var isExpired = true
+        val currentTime = LocalDateTime.now()
+        val expiredTime = refreshTime.plusDays(refreshTokenLifetimeDays.toLong())
 
-        if (refreshTime.isBefore(refreshTime.plusDays(refreshTokenLifetimeDays.toLong())))
+        if (currentTime.isBefore(expiredTime))
             isExpired = false
 
         return isExpired
