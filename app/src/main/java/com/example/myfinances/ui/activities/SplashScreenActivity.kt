@@ -39,38 +39,10 @@ class SplashScreenActivity : AppCompatActivity() {
 		binding.ivLogo.animate().setDuration(1500).alpha(1f ).withEndAction {
 			var i = Intent(this, AuthActivity::class.java)
 
-			val refreshTime = accessDataRepo.getLastRefresh()
+			val authResult = apiTokenRepo.tryPassSavedTokens(accessDataRepo)
 
-			if (!refreshTime.isNullOrBlank()){
-				val refreshTimeParsed = LocalDateTime.parse(refreshTime)
-
-				val isAccessTokenExpired = apiTokenRepo.checkAccessTokenExpired(refreshTimeParsed)
-
-				if (!isAccessTokenExpired)
-					i = Intent(this, MainActivity::class.java)
-				else{
-					val isRefreshTokenExpired = apiTokenRepo.checkRefreshTokenExpired(refreshTimeParsed)
-
-					if (!isRefreshTokenExpired){
-						val refreshToken = accessDataRepo.getRefreshToken() as String
-						val accessToken = accessDataRepo.getAccessToken() as String
-
-						val newTokensResponse = runBlocking {
-							apiTokenRepo.sendRefreshTokenRequest(accessToken, refreshToken).await()
-						}
-
-						if (newTokensResponse.isSuccessful){
-							val newTokens = newTokensResponse.success!!.data
-
-							accessDataRepo.updateAccessToken(newTokens.accessToken)
-							accessDataRepo.updateRefreshToken(newTokens.refreshToken)
-							accessDataRepo.updateLastRefresh(LocalDateTime.now())
-
-							i = Intent(this, MainActivity::class.java)
-						}
-					}
-				}
-			}
+			if (authResult)
+				i = Intent(this, MainActivity::class.java)
 
 			startActivity(i)
 

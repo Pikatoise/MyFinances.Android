@@ -1,5 +1,6 @@
 package com.example.myfinances.api.repositories
 
+import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.myfinances.api.ApiClient
@@ -9,6 +10,8 @@ import com.example.myfinances.api.models.RequestError
 import com.example.myfinances.api.models.SuccessResponse
 import com.example.myfinances.api.models.auth.LoginResponse
 import com.example.myfinances.api.models.token.TokenResponse
+import com.example.myfinances.db.AccessDataRepository
+import com.example.myfinances.ui.activities.MainActivity
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -16,6 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -95,5 +99,47 @@ class ApiTokenRepository {
             isExpired = false
 
         return isExpired
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun tryPassSavedTokens(accessDataRepo: AccessDataRepository): Boolean {
+        val refreshTime = accessDataRepo.getLastRefresh()
+
+        if (!refreshTime.isNullOrBlank()) {
+            val refreshTimeParsed = LocalDateTime.parse(refreshTime)
+
+            val isAccessTokenExpired = checkAccessTokenExpired(refreshTimeParsed)
+
+            if (!isAccessTokenExpired)
+                return true
+            else {
+                val isRefreshTokenExpired = checkRefreshTokenExpired(refreshTimeParsed)
+
+                if (!isRefreshTokenExpired) {
+                    val refreshToken = accessDataRepo.getRefreshToken() as String
+                    val accessToken = accessDataRepo.getAccessToken() as String
+
+                    val request = CoroutineScope(Dispatchers.Main).async {
+                        sendRefreshTokenRequest(accessToken, refreshToken).await()
+                    }
+
+                    request.invokeOnCompletion {
+                        val result = runBlocking { request.await() }
+
+                        if (result.isSuccessful) {
+                            val newTokens = result.success!!.data
+
+                            accessDataRepo.updateAccessToken(newTokens.accessToken)
+                            accessDataRepo.updateRefreshToken(newTokens.refreshToken)
+                            accessDataRepo.updateLastRefresh(LocalDateTime.now())
+                        }
+                    }
+
+                    return true
+                }
+            }
+        }
+
+        return false
     }
 }

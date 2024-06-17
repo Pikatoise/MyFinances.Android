@@ -91,8 +91,6 @@ class MainFragment : Fragment() {
 
 		binding.apply {
 			tvCurrencyUsd.setOnClickListener {
-				val access = accessDataRepo.getAccessToken()
-				val refresh = accessDataRepo.getRefreshToken()
 				val lastRefresh = accessDataRepo.getLastRefresh()
 
 				Toast.makeText(this@MainFragment.requireContext(), lastRefresh, Toast.LENGTH_SHORT).show()
