@@ -3,9 +3,9 @@
     <string name="usd_title">USD</string>
     <string name="usd_symbol">$</string>
     <string name="euro_symbol">€</string>
-    <string name="usd_to_ruble">60,5 ₽</string>
+    <string name="usd_to_ruble">--,- ₽</string>
     <string name="euro_title">Euro</string>
-    <string name="euro_to_ruble">70,10 ₽</string>
+    <string name="euro_to_ruble">--,- ₽</string>
     <string name="main_empty_operations">Пусто</string>
     <string name="main_operation_plus">Доход</string>
     <string name="main_operation_minus">Расход</string>

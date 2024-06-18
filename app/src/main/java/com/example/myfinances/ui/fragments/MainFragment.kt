@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import androidx.core.content.ContextCompat.getColor
+import com.example.myfinances.Currencies
 import com.example.myfinances.ui.activities.AllOperationsActivity
 import com.example.myfinances.ui.activities.AuthActivity
 import com.example.myfinances.ui.dialogs.DialogRemoveItem
@@ -25,6 +26,7 @@ import com.example.myfinances.db.OperationRepository
 import com.example.myfinances.R
 import com.example.myfinances.Toasts
 import com.example.myfinances.api.repositories.ApiAuthRepository
+import com.example.myfinances.api.repositories.ApiCurrencyRepository
 import com.example.myfinances.api.repositories.ApiTokenRepository
 import com.example.myfinances.databinding.FragmentMainBinding
 import com.example.myfinances.db.AccessDataRepository
@@ -55,12 +57,15 @@ data class Data(val success: Boolean,val timestamp: Int, val base: String,val da
 
 class MainFragment : Fragment() {
 	private lateinit var binding: FragmentMainBinding
+
 	private lateinit var db: OperationRepository
-	private lateinit var operationsList: ArrayList<Operation>
-	private var dataArrayList = ArrayList<ListData?>()
 	private lateinit var apiAuthRepo: ApiAuthRepository
 	private lateinit var apiTokenRepo: ApiTokenRepository
 	private lateinit var accessDataRepo: AccessDataRepository
+	private lateinit var apiCurrencyRepo: ApiCurrencyRepository
+
+	private lateinit var operationsList: ArrayList<Operation>
+	private var dataArrayList = ArrayList<ListData?>()
 	private val imageList = intArrayOf(
 		R.drawable.ic_alcohol,
 		R.drawable.ic_products,
@@ -84,16 +89,14 @@ class MainFragment : Fragment() {
 	): View {
 		binding = FragmentMainBinding.inflate(inflater,container,false)
 
-		apiAuthRepo = ApiAuthRepository()
-		apiTokenRepo = ApiTokenRepository()
 		val sharedPreferencesContext = this@MainFragment.requireContext().getSharedPreferences(AccessDataRepository.preferencesName, MODE_PRIVATE)
 		accessDataRepo = AccessDataRepository(sharedPreferencesContext)
+		apiAuthRepo = ApiAuthRepository()
+		apiTokenRepo = ApiTokenRepository()
+		apiCurrencyRepo = ApiCurrencyRepository(accessDataRepo.getAccessToken()!!)
 
 		binding.apply {
 			tvCurrencyUsd.setOnClickListener {
-				val lastRefresh = accessDataRepo.getLastRefresh()
-
-				Toast.makeText(this@MainFragment.requireContext(), lastRefresh, Toast.LENGTH_SHORT).show()
 			}
 
 			buttonPlus.setOnClickListener {
@@ -138,7 +141,7 @@ class MainFragment : Fragment() {
 		// Загрузка данных из бд
 		updateData()
 
-		//currencyApiRequest()
+		fillCurrencyFromApi()
 
 		return binding.root
 	}
@@ -204,40 +207,44 @@ class MainFragment : Fragment() {
 		}
 	}
 
-	private fun currencyApiRequest(){
-		val url = "http://data.fixer.io/api/latest?access_key=4e07385f3f73922895d21be02e123181&symbols=USD,RUB&format=1"
+	private fun fillCurrencyFromApi(){
+		val requestUsd = CoroutineScope(Dispatchers.Main).async {
+			apiCurrencyRepo.sendCurrencyRequest(Currencies.USD).await()
+		}
 
-		val currencyFetch = OkHttpClient()
+		val requestEuro = CoroutineScope(Dispatchers.Main).async {
+			apiCurrencyRepo.sendCurrencyRequest(Currencies.EUR).await()
+		}
 
-		val request = Request.Builder().url(url).build()
+		requestUsd.invokeOnCompletion {
+			val response = runBlocking { requestUsd.await() }
 
-		currencyFetch.newCall(request).enqueue(object: Callback {
-			override fun onFailure(call: Call, e: IOException) {
-				Log.d("Error: Currency fetching ",e.message.toString())
+			if (response.isSuccessful){
+				val currency = response.success!!.data.value
+
+				binding.tvCurrencyUsd.text = NumberFormats.FormatToRuble(currency)
 			}
+			else{
+				binding.tvCurrencyUsd.text = "-,--"
 
-			override fun onResponse(call: Call, response: Response) {
-				response.use {
-					if (!response.isSuccessful){
-						Log.e("HTTP Error","Something didn't load")
-					}
-					else{
-						val body = response.body?.string()
-
-						activity?.runOnUiThread {
-							updateCurrency(body.toString())
-						}
-					}
-				}
+				Toast.makeText(this@MainFragment.requireContext(), response.error!!.errors.code, Toast.LENGTH_SHORT).show()
 			}
-		})
-	}
+		}
 
-	private fun updateCurrency(jsonData: String) {
-		var response = Json.decodeFromString<Data>(jsonData)
+		requestEuro.invokeOnCompletion {
+			val response = runBlocking { requestEuro.await() }
 
-		binding.tvCurrencyUsd.text = (round((response.rates.RUB / response.rates.USD) * 100) / 100).toString()
-		binding.tvCurrencyEuro.text = (round(response.rates.RUB * 100) / 100).toString()
+			if (response.isSuccessful){
+				val currency = response.success!!.data.value
+
+				binding.tvCurrencyEuro.text = NumberFormats.FormatToRuble(currency)
+			}
+			else{
+				binding.tvCurrencyUsd.text = "-,--"
+
+				Toast.makeText(this@MainFragment.requireContext(), response.error!!.errors.code, Toast.LENGTH_SHORT).show()
+			}
+		}
 	}
 
 	private fun configPieChart(pieChart: PieChart){
