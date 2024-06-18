@@ -130,16 +130,16 @@ class MainFragment : Fragment() {
 		}
 
 		// Инициализация БД
-		db = OperationRepository(this.requireContext())
+//		db = OperationRepository(this.requireContext())
 
 		// Инициализация текущего периода
-		db.updateCurrentPeriod()
+//		db.updateCurrentPeriod()
 
 		// Настройка диаграммы
 		configPieChart(binding.pieChart)
 
 		// Загрузка данных из бд
-		updateData()
+//		updateData()
 
 		fillCurrencyFromApi()
 
@@ -167,7 +167,7 @@ class MainFragment : Fragment() {
 	private fun updateData(){
 		fillPieChart(binding.pieChart)
 
-		fillMonthOperations()
+		//fillMonthOperations()
 	}
 
 	@RequiresApi(Build.VERSION_CODES.O)
@@ -270,85 +270,87 @@ class MainFragment : Fragment() {
 	}
 
 	private fun fillPieChart(pieChart: PieChart){
-		// Месячный бюджет
-		val expenses = db.getMonthlyExpensesInRub(db.getCurrentPeriod())
-
-		if (expenses == 0.0){
-			pieChart.setCenterTextColor(getColor(requireContext(), R.color.black))
-		}
-		else if (expenses > 0){
-			pieChart.setCenterTextColor(getColor(requireContext(), R.color.green_main))
-		}
-		else{
-			pieChart.setCenterTextColor(getColor(requireContext(), R.color.red_crimson))
-		}
-
-		pieChart.centerText = NumberFormats.FormatToRuble(expenses)
-
-		// Диаграмма и свойства
-
-		val entries: ArrayList<PieEntry> = ArrayList()
-
-		val operations = db.getPeriodOperations(db.getCurrentPeriod().id)
-
-		val typesExpenses: MutableMap<Int, Double> = mutableMapOf()
-
-		if (operations.isEmpty()){
-			entries.add(PieEntry(1f))
-		}
-		else{
-			operations.forEach {
-				if (typesExpenses.containsKey(it.type)){
-					var oldValue = typesExpenses.get(it.type)!!
-
-					typesExpenses[it.type] = abs(oldValue) + abs(it.amount)
-				}
-				else{
-					typesExpenses[it.type] = it.amount
-				}
-			}
-
-			typesExpenses.forEach{
-				entries.add(PieEntry(abs(it.value.toFloat())))
-			}
-		}
 
 
-		val dataSet = PieDataSet(entries, "Категории")
-
-		dataSet.sliceSpace = 0f
-
-		dataSet.setDrawValues(false)
-
-		val colors: ArrayList<Int> = ArrayList()
-
-		if (entries.count() == 1 && entries[0].value == 1f){
-			colors.add(getColor(requireContext(), R.color.gray_dark))
-		}
-		else{
-			colors.addAll(
-				listOf(
-					getColor(requireContext(), R.color.orange_dark),
-					getColor(requireContext(), R.color.violet_dark),
-					getColor(requireContext(), R.color.blue_light),
-					getColor(requireContext(), R.color.chocolate),
-					getColor(requireContext(), R.color.gold),
-					getColor(requireContext(), R.color.green_light),
-					getColor(requireContext(), R.color.red_crimson),
-					getColor(requireContext(), R.color.blue_medium),
-					getColor(requireContext(), R.color.green_dark),
-					getColor(requireContext(), R.color.gold_dark),
-					getColor(requireContext(), R.color.violet_medium),
-					getColor(requireContext(), R.color.blue_dark),
-				))
-		}
-
-		dataSet.colors = colors
-
-		val data = PieData(dataSet)
-
-		pieChart.data = data
-
-		pieChart.invalidate()
+//		// Месячный бюджет
+//		val expenses = db.getMonthlyExpensesInRub(db.getCurrentPeriod())
+//
+//		if (expenses == 0.0){
+//			pieChart.setCenterTextColor(getColor(requireContext(), R.color.black))
+//		}
+//		else if (expenses > 0){
+//			pieChart.setCenterTextColor(getColor(requireContext(), R.color.green_main))
+//		}
+//		else{
+//			pieChart.setCenterTextColor(getColor(requireContext(), R.color.red_crimson))
+//		}
+//
+//		pieChart.centerText = NumberFormats.FormatToRuble(expenses)
+//
+//		// Диаграмма и свойства
+//
+//		val entries: ArrayList<PieEntry> = ArrayList()
+//
+//		val operations = db.getPeriodOperations(db.getCurrentPeriod().id)
+//
+//		val typesExpenses: MutableMap<Int, Double> = mutableMapOf()
+//
+//		if (operations.isEmpty()){
+//			entries.add(PieEntry(1f))
+//		}
+//		else{
+//			operations.forEach {
+//				if (typesExpenses.containsKey(it.type)){
+//					var oldValue = typesExpenses.get(it.type)!!
+//
+//					typesExpenses[it.type] = abs(oldValue) + abs(it.amount)
+//				}
+//				else{
+//					typesExpenses[it.type] = it.amount
+//				}
+//			}
+//
+//			typesExpenses.forEach{
+//				entries.add(PieEntry(abs(it.value.toFloat())))
+//			}
+//		}
+//
+//
+//		val dataSet = PieDataSet(entries, "Категории")
+//
+//		dataSet.sliceSpace = 0f
+//
+//		dataSet.setDrawValues(false)
+//
+//		val colors: ArrayList<Int> = ArrayList()
+//
+//		if (entries.count() == 1 && entries[0].value == 1f){
+//			colors.add(getColor(requireContext(), R.color.gray_dark))
+//		}
+//		else{
+//			colors.addAll(
+//				listOf(
+//					getColor(requireContext(), R.color.orange_dark),
+//					getColor(requireContext(), R.color.violet_dark),
+//					getColor(requireContext(), R.color.blue_light),
+//					getColor(requireContext(), R.color.chocolate),
+//					getColor(requireContext(), R.color.gold),
+//					getColor(requireContext(), R.color.green_light),
+//					getColor(requireContext(), R.color.red_crimson),
+//					getColor(requireContext(), R.color.blue_medium),
+//					getColor(requireContext(), R.color.green_dark),
+//					getColor(requireContext(), R.color.gold_dark),
+//					getColor(requireContext(), R.color.violet_medium),
+//					getColor(requireContext(), R.color.blue_dark),
+//				))
+//		}
+//
+//		dataSet.colors = colors
+//
+//		val data = PieData(dataSet)
+//
+//		pieChart.data = data
+//
+//		pieChart.invalidate()
 	}
 }
