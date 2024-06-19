@@ -3,7 +3,6 @@ package com.example.myfinances.ui.fragments
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,19 +15,18 @@ import androidx.core.content.ContextCompat.getColor
 import com.example.myfinances.ArrayResources
 import com.example.myfinances.Currencies
 import com.example.myfinances.ui.activities.AllOperationsActivity
-import com.example.myfinances.ui.activities.AuthActivity
 import com.example.myfinances.ui.dialogs.DialogRemoveItem
-import com.example.myfinances.lists.ListAdapter
-import com.example.myfinances.lists.ListData
+import com.example.myfinances.lists.CurrentPeriodAdapter
+import com.example.myfinances.lists.CurrentPeriodItem
 import com.example.myfinances.NumberFormats
 import com.example.myfinances.db.Operation
 import com.example.myfinances.ui.activities.OperationActivity
 import com.example.myfinances.db.OperationRepository
 import com.example.myfinances.R
-import com.example.myfinances.Toasts
 import com.example.myfinances.api.repositories.ApiAuthRepository
 import com.example.myfinances.api.repositories.ApiCurrencyRepository
 import com.example.myfinances.api.repositories.ApiOperationRepository
+import com.example.myfinances.api.repositories.ApiOperationTypeRepository
 import com.example.myfinances.api.repositories.ApiPeriodRepository
 import com.example.myfinances.api.repositories.ApiTokenRepository
 import com.example.myfinances.databinding.FragmentMainBinding
@@ -43,20 +41,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import java.io.IOException
 import kotlin.math.abs
-import kotlin.math.round
-
-@Serializable
-data class Rates(val USD: Double, val RUB: Double)
-@Serializable
-data class Data(val success: Boolean,val timestamp: Int, val base: String,val date: String,val rates: Rates)
 
 class MainFragment : Fragment() {
 	private lateinit var binding: FragmentMainBinding
@@ -68,12 +53,10 @@ class MainFragment : Fragment() {
 	private lateinit var apiCurrencyRepo: ApiCurrencyRepository
 	private lateinit var apiPeriodRepo: ApiPeriodRepository
 	private lateinit var apiOperationRepo: ApiOperationRepository
+	private lateinit var apiTypesRepo: ApiOperationTypeRepository
 
 	private var currentPeriodId: Int = -1
 	private lateinit var operationsList: ArrayList<Operation>
-	private var dataArrayList = ArrayList<ListData?>()
-
-
 
 	@RequiresApi(Build.VERSION_CODES.O)
 	override fun onCreateView(
@@ -92,6 +75,7 @@ class MainFragment : Fragment() {
 		apiPeriodRepo = ApiPeriodRepository(accessToken)
 		apiCurrencyRepo = ApiCurrencyRepository(accessToken)
 		apiOperationRepo = ApiOperationRepository(accessToken)
+		apiTypesRepo = ApiOperationTypeRepository(accessToken)
 
 		binding.apply {
 			tvCurrencyUsd.setOnClickListener {
@@ -125,6 +109,18 @@ class MainFragment : Fragment() {
 				intent.putExtra("operations", db.getAllOperations())
 
 				startActivity(intent)
+			}
+
+			lvOperationsMonth.setOnItemClickListener { _, _, position, _ ->
+				val dialogRemove = DialogRemoveItem( "Удалить операцию?") {
+					db.removeOperation(operationsList[position].id)
+
+					updateData()
+
+					Toast.makeText(activity, "Готово", Toast.LENGTH_SHORT).show()
+				}
+				val manager = parentFragmentManager
+				dialogRemove.show(manager,"removeDialog")
 			}
 		}
 
@@ -194,43 +190,56 @@ class MainFragment : Fragment() {
 	private fun updateData(){
 		fillPieChart(binding.pieChart)
 
-		//fillMonthOperations()
+		fillMonthOperations()
 	}
 
 	@RequiresApi(Build.VERSION_CODES.O)
 	private fun fillMonthOperations(){
-		dataArrayList = ArrayList()
 		binding.lvOperationsMonth.adapter = null
 
-		operationsList = db.getPeriodOperations(db.getCurrentPeriod().id)
-
-		if (operationsList.isEmpty()){
-			binding.tvEmptyOperations.visibility = View.VISIBLE
-
-			return
+		val requestOperations = CoroutineScope(Dispatchers.Main).async {
+			apiOperationRepo.sendOperationsByPeriodRequest(currentPeriodId).await()
 		}
 
-		binding.tvEmptyOperations.visibility = View.INVISIBLE
+		requestOperations.invokeOnCompletion {
+			val responseOperations = runBlocking { requestOperations.await() }
 
-		for (operation in operationsList) {
-			val listData = ListData( ArrayResources.icons[operation.type], operation.title, operation.amount )
-			dataArrayList.add(listData)
-		}
+			if (responseOperations.isSuccessful){
+				val operationsList = responseOperations.success!!.data.toList().reversed()
 
-		val listAdapter = ListAdapter(this.requireContext(), dataArrayList)
-		binding.lvOperationsMonth.adapter = listAdapter
-		binding.lvOperationsMonth.isClickable = true
+				if (operationsList.isEmpty()){
+					binding.tvEmptyOperations.visibility = View.VISIBLE
 
-		binding.lvOperationsMonth.setOnItemClickListener { _, _, position, _ ->
-			val dialogRemove = DialogRemoveItem( "Удалить операцию?") {
-				db.removeOperation(operationsList[position].id)
+					return@invokeOnCompletion
+				}
 
-				updateData()
+				val requestTypes = CoroutineScope(Dispatchers.Main).async {
+					apiTypesRepo.sendAllTypesRequest().await()
+				}
 
-				Toast.makeText(activity, "Готово", Toast.LENGTH_SHORT).show()
+				requestTypes.invokeOnCompletion {
+					val responseTypes = runBlocking { requestTypes.await() }
+
+					if (responseTypes.isSuccessful) {
+						val types = responseTypes.success!!.data.toList()
+
+						val data = operationsList.map { x -> CurrentPeriodItem( x.typeId, x.title, x.amount ) }
+
+						val adapter = CurrentPeriodAdapter(this.requireContext(), data, types)
+
+						binding.tvEmptyOperations.visibility = View.INVISIBLE
+						binding.lvOperationsMonth.adapter = adapter
+						binding.lvOperationsMonth.isClickable = true
+					}
+					else{
+						binding.tvEmptyOperations.visibility = View.VISIBLE
+
+						return@invokeOnCompletion
+					}
+				}
 			}
-			val manager = parentFragmentManager
-			dialogRemove.show(manager,"removeDialog")
+			else
+				binding.tvEmptyOperations.visibility = View.VISIBLE
 		}
 	}
 
@@ -287,7 +296,7 @@ class MainFragment : Fragment() {
 		pieChart.isHighlightPerTapEnabled = false
 		pieChart.legend.isEnabled = false
 
-		pieChart.animateY(1000, Easing.EaseInOutQuad)
+		pieChart.animateY(2000, Easing.EaseInOutQuad)
 
 		pieChart.highlightValues(null)
 
