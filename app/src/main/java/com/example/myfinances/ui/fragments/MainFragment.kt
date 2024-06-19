@@ -28,6 +28,7 @@ import com.example.myfinances.R
 import com.example.myfinances.Toasts
 import com.example.myfinances.api.repositories.ApiAuthRepository
 import com.example.myfinances.api.repositories.ApiCurrencyRepository
+import com.example.myfinances.api.repositories.ApiOperationRepository
 import com.example.myfinances.api.repositories.ApiPeriodRepository
 import com.example.myfinances.api.repositories.ApiTokenRepository
 import com.example.myfinances.databinding.FragmentMainBinding
@@ -66,6 +67,7 @@ class MainFragment : Fragment() {
 	private lateinit var accessDataRepo: AccessDataRepository
 	private lateinit var apiCurrencyRepo: ApiCurrencyRepository
 	private lateinit var apiPeriodRepo: ApiPeriodRepository
+	private lateinit var apiOperationRepo: ApiOperationRepository
 
 	private var currentPeriodId: Int = -1
 	private lateinit var operationsList: ArrayList<Operation>
@@ -89,6 +91,7 @@ class MainFragment : Fragment() {
 		apiTokenRepo = ApiTokenRepository()
 		apiPeriodRepo = ApiPeriodRepository(accessToken)
 		apiCurrencyRepo = ApiCurrencyRepository(accessToken)
+		apiOperationRepo = ApiOperationRepository(accessToken)
 
 		binding.apply {
 			tvCurrencyUsd.setOnClickListener {
@@ -189,7 +192,7 @@ class MainFragment : Fragment() {
 
 	@RequiresApi(Build.VERSION_CODES.O)
 	private fun updateData(){
-		//fillPieChart(binding.pieChart)
+		fillPieChart(binding.pieChart)
 
 		//fillMonthOperations()
 	}
@@ -268,6 +271,7 @@ class MainFragment : Fragment() {
 	}
 
 	private fun configPieChart(pieChart: PieChart){
+		// Внешние настройки
 		pieChart.description.isEnabled = false
 		pieChart.setExtraOffsets(5f, 10f, 5f, 5f)
 
@@ -276,7 +280,7 @@ class MainFragment : Fragment() {
 		pieChart.holeRadius = 90f
 
 		pieChart.setDrawCenterText(true)
-		pieChart.setCenterTextSize(24f)
+		pieChart.setCenterTextSize(28f)
 		pieChart.setCenterTextColor(getColor(requireContext(), R.color.black))
 
 		pieChart.isRotationEnabled = false
@@ -287,17 +291,35 @@ class MainFragment : Fragment() {
 
 		pieChart.highlightValues(null)
 
+		// Создание пустой диаграммы
+		val entries: ArrayList<PieEntry> = ArrayList()
+		val colors: ArrayList<Int> = ArrayList()
+
+		entries.add(PieEntry(1f))
+
+		colors.add(getColor(requireContext(), R.color.gray_dark))
+
+		var dataSet = PieDataSet(entries, "Категории")
+		dataSet.sliceSpace = 0f
+		dataSet.setDrawValues(false)
+
+		dataSet.colors = colors
+
+		pieChart.data = PieData(dataSet)
+
+		pieChart.centerText = NumberFormats.FormatToRuble(0.0)
+
 		pieChart.invalidate()
 	}
 
 	private fun fillPieChart(pieChart: PieChart){
 		// Месячный бюджет
-		val request = CoroutineScope(Dispatchers.Main).async {
+		val requestProfitOfPeriod = CoroutineScope(Dispatchers.Main).async {
 			apiPeriodRepo.sendProfitOfPeriodRequest(currentPeriodId).await()
 		}
 
-		request.invokeOnCompletion {
-			val response = runBlocking { request.await() }
+		requestProfitOfPeriod.invokeOnCompletion {
+			val response = runBlocking { requestProfitOfPeriod.await() }
 			var expenses = 0.0
 
 			if (response.isSuccessful)
@@ -312,55 +334,35 @@ class MainFragment : Fragment() {
 		}
 
 		// Диаграмма и свойства
-
 		val entries: ArrayList<PieEntry> = ArrayList()
-
-		val operations = db.getPeriodOperations(db.getCurrentPeriod().id)
-
-		val typesExpenses: MutableMap<Int, Double> = mutableMapOf()
-
-		if (operations.isEmpty()){
-			entries.add(PieEntry(1f))
-		}
-		else{
-			operations.forEach {
-				if (typesExpenses.containsKey(it.type)){
-					var oldValue = typesExpenses.get(it.type)!!
-
-					typesExpenses[it.type] = abs(oldValue) + abs(it.amount)
-				}
-				else{
-					typesExpenses[it.type] = it.amount
-				}
-			}
-
-			typesExpenses.forEach{
-				entries.add(PieEntry(abs(it.value.toFloat())))
-			}
-		}
-
-
-		val dataSet = PieDataSet(entries, "Категории")
-
-		dataSet.sliceSpace = 0f
-
-		dataSet.setDrawValues(false)
-
 		val colors: ArrayList<Int> = ArrayList()
 
-		if (entries.count() == 1 && entries[0].value == 1f){
-			colors.add(getColor(requireContext(), R.color.gray_dark))
-		}
-		else{
-			colors.addAll(ArrayResources.getPieColor(requireContext()).toList())
+		val requestSummedGroups = CoroutineScope(Dispatchers.Main).async {
+			apiOperationRepo.sendGroupByTypeAndSumRequest(currentPeriodId).await()
 		}
 
-		dataSet.colors = colors
+		requestSummedGroups.invokeOnCompletion {
+			val result = runBlocking { requestSummedGroups.await() }
 
-		val data = PieData(dataSet)
+			if (result.isSuccessful && result.success!!.data.isNotEmpty() && result.success.data[0] != 0){
+				val sums = result.success.data
 
-		pieChart.data = data
+				sums.forEach{
+					entries.add(PieEntry(abs(it.toFloat())))
+				}
 
-		pieChart.invalidate()
+				colors.addAll(ArrayResources.getPieColor(requireContext()).toList())
+
+				val dataSet = PieDataSet(entries, "Категории")
+				dataSet.sliceSpace = 0f
+				dataSet.setDrawValues(false)
+
+				dataSet.colors = colors
+
+				pieChart.data = PieData(dataSet)
+
+				pieChart.invalidate()
+			}
+		}
 	}
 }
