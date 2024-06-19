@@ -1,5 +1,6 @@
 package com.example.myfinances.api.repositories
 
+import com.example.myfinances.Currencies
 import com.example.myfinances.api.ApiClient
 import com.example.myfinances.api.models.BaseResult
 import com.example.myfinances.api.models.CollectionResponse
@@ -7,6 +8,7 @@ import com.example.myfinances.api.models.CollectionResult
 import com.example.myfinances.api.models.ErrorResponse
 import com.example.myfinances.api.models.RequestError
 import com.example.myfinances.api.models.SuccessResponse
+import com.example.myfinances.api.models.currency.CurrencyResponse
 import com.example.myfinances.api.models.operation.OperationResponse
 import com.example.myfinances.api.models.period.PeriodResponse
 import com.squareup.moshi.Moshi
@@ -92,6 +94,35 @@ class ApiOperationRepository(private val accessToken: String) {
             }
         } catch(e: IOException){
             return@async CollectionResult(null, RequestError)
+        }
+    }
+
+    fun sendDeleteOperationRequest(operationId: Int): Deferred<BaseResult<Boolean>> = CoroutineScope(Dispatchers.IO).async {
+        val endpoint = "remove/$operationId"
+
+        val request = Request.Builder()
+            .url(url + endpoint)
+            .delete()
+            .addHeader("Authorization", "Bearer " + accessToken)
+            .build()
+
+        try{
+            val response = client.newCall(request).execute()
+            val responseBody = response.body?.string()
+
+            if (response.isSuccessful) {
+                return@async BaseResult<Boolean>(SuccessResponse(true), null)
+            }
+            else{
+                val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+                val errorAdapter = moshi.adapter(ErrorResponse::class.java)
+
+                val errorResponse = responseBody?.let { errorAdapter.fromJson(it) }
+
+                return@async BaseResult(null, errorResponse)
+            }
+        } catch(e: IOException){
+            return@async BaseResult(null, RequestError)
         }
     }
 }

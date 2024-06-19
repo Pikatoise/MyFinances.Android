@@ -47,4 +47,12 @@ object Toasts {
     public val passwordConfirmNotEqueal: (c: Context) -> Toast = {
         c -> Toast.makeText(c, "Пароли не совпадают", Toast.LENGTH_SHORT)
     }
+
+    public val successfully: (c: Context) -> Toast = {
+        c -> Toast.makeText(c, "Готово", Toast.LENGTH_SHORT)
+    }
+
+    public val failure: (c: Context) -> Toast = {
+            c -> Toast.makeText(c, "Неудачно", Toast.LENGTH_SHORT)
+    }
 }

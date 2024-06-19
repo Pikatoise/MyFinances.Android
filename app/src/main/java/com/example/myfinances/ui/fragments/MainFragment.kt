@@ -7,7 +7,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
@@ -19,10 +18,11 @@ import com.example.myfinances.ui.dialogs.DialogRemoveItem
 import com.example.myfinances.lists.CurrentPeriodAdapter
 import com.example.myfinances.lists.CurrentPeriodItem
 import com.example.myfinances.NumberFormats
-import com.example.myfinances.db.Operation
 import com.example.myfinances.ui.activities.OperationActivity
 import com.example.myfinances.db.OperationRepository
 import com.example.myfinances.R
+import com.example.myfinances.Toasts
+import com.example.myfinances.api.models.operation.OperationResponse
 import com.example.myfinances.api.repositories.ApiAuthRepository
 import com.example.myfinances.api.repositories.ApiCurrencyRepository
 import com.example.myfinances.api.repositories.ApiOperationRepository
@@ -56,7 +56,7 @@ class MainFragment : Fragment() {
 	private lateinit var apiTypesRepo: ApiOperationTypeRepository
 
 	private var currentPeriodId: Int = -1
-	private lateinit var operationsList: ArrayList<Operation>
+	private lateinit var currentItems: List<OperationResponse>
 
 	@RequiresApi(Build.VERSION_CODES.O)
 	override fun onCreateView(
@@ -113,11 +113,22 @@ class MainFragment : Fragment() {
 
 			lvOperationsMonth.setOnItemClickListener { _, _, position, _ ->
 				val dialogRemove = DialogRemoveItem( "Удалить операцию?") {
-					db.removeOperation(operationsList[position].id)
+					val requestDelete = CoroutineScope(Dispatchers.Main).async {
+						apiOperationRepo.sendDeleteOperationRequest(currentItems[position].id).await()
+					}
 
-					updateData()
+					requestDelete.invokeOnCompletion {
+						val responseDelete = runBlocking { requestDelete.await() }
 
-					Toast.makeText(activity, "Готово", Toast.LENGTH_SHORT).show()
+						if (responseDelete.isSuccessful){
+							updateData()
+
+							Toasts.successfully(this@MainFragment.requireContext())
+						}
+						else
+							Toasts.failure(this@MainFragment.requireContext())
+					}
+
 				}
 				val manager = parentFragmentManager
 				dialogRemove.show(manager,"removeDialog")
@@ -224,6 +235,8 @@ class MainFragment : Fragment() {
 						val types = responseTypes.success!!.data.toList()
 
 						val data = operationsList.map { x -> CurrentPeriodItem( x.typeId, x.title, x.amount ) }
+
+						currentItems = operationsList
 
 						val adapter = CurrentPeriodAdapter(this.requireContext(), data, types)
 
