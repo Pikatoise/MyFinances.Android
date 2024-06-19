@@ -7,6 +7,7 @@ import com.example.myfinances.api.models.CollectionResult
 import com.example.myfinances.api.models.ErrorResponse
 import com.example.myfinances.api.models.RequestError
 import com.example.myfinances.api.models.SuccessResponse
+import com.example.myfinances.api.models.operation.OperationResponse
 import com.example.myfinances.api.models.period.PeriodResponse
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -45,6 +46,41 @@ class ApiOperationRepository(private val accessToken: String) {
                 val collectionResponse = responseBody?.let { adapter.fromJson(it) }
 
                 return@async CollectionResult<Array<Int>>(collectionResponse, null)
+            }
+            else{
+                val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+                val errorAdapter = moshi.adapter(ErrorResponse::class.java)
+
+                val errorResponse = responseBody?.let { errorAdapter.fromJson(it) }
+
+                return@async CollectionResult(null, errorResponse)
+            }
+        } catch(e: IOException){
+            return@async CollectionResult(null, RequestError)
+        }
+    }
+
+    fun sendOperationsByPeriodRequest(periodId: Int): Deferred<CollectionResult<Array<OperationResponse>>> = CoroutineScope(Dispatchers.IO).async {
+        val endpoint = "$periodId"
+
+        val request = Request.Builder()
+            .url(url + endpoint)
+            .get()
+            .addHeader("Authorization", "Bearer " + accessToken)
+            .build()
+
+        try{
+            val response = client.newCall(request).execute()
+            val responseBody = response.body?.string()
+
+            if (response.isSuccessful) {
+                val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+                val type = Types.newParameterizedType(CollectionResponse::class.java, Array<OperationResponse>::class.java)
+                val adapter = moshi.adapter<CollectionResponse<Array<OperationResponse>>>(type)
+
+                val collectionResponse = responseBody?.let { adapter.fromJson(it) }
+
+                return@async CollectionResult<Array<OperationResponse>>(collectionResponse, null)
             }
             else{
                 val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
