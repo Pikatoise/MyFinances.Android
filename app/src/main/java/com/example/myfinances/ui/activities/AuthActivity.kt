@@ -77,7 +77,7 @@ class AuthActivity : AppCompatActivity() {
                     accessDataRepo.updateAccessToken(accessData.accessToken)
                     accessDataRepo.updateRefreshToken(accessData.refreshToken)
                     accessDataRepo.updateUserId(accessData.userId)
-                    accessDataRepo.updateLastRefresh(LocalDateTime.now())
+                    accessDataRepo.updateLastRefresh(LocalDateTime.now().toString())
 
                     progressDialog.setContentView(R.layout.successful_dialog)
 

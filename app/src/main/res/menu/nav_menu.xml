@@ -25,6 +25,11 @@
             android:id="@+id/item_about"
             android:title="О программе"
             android:icon="@drawable/ic_info" />
+
+        <item
+            android:id="@+id/item_exit"
+            android:title="Выйти"
+            android:icon="@drawable/ic_arrow_back"/>
     </group>
 
 </menu>

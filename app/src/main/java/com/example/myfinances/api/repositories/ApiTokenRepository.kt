@@ -129,7 +129,7 @@ class ApiTokenRepository {
 
                         accessDataRepo.updateAccessToken(newTokens.accessToken)
                         accessDataRepo.updateRefreshToken(newTokens.refreshToken)
-                        accessDataRepo.updateLastRefresh(LocalDateTime.now())
+                        accessDataRepo.updateLastRefresh(LocalDateTime.now().toString())
 
                         canAccess = true
                     }

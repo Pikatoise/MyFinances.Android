@@ -62,9 +62,9 @@ class AccessDataRepository(preferencesContext: SharedPreferences){
         }
     }
 
-    public fun updateLastRefresh(lastRefresh: LocalDateTime) {
+    public fun updateLastRefresh(lastRefresh: String) {
         preferences.edit().apply{
-            putString(LAST_REFRESH_KEY, lastRefresh.toString())
+            putString(LAST_REFRESH_KEY, lastRefresh)
 
             apply()
         }
