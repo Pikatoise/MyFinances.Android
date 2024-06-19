@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import androidx.core.content.ContextCompat.getColor
+import com.example.myfinances.ArrayResources
 import com.example.myfinances.Currencies
 import com.example.myfinances.ui.activities.AllOperationsActivity
 import com.example.myfinances.ui.activities.AuthActivity
@@ -69,20 +70,7 @@ class MainFragment : Fragment() {
 	private var currentPeriodId: Int = -1
 	private lateinit var operationsList: ArrayList<Operation>
 	private var dataArrayList = ArrayList<ListData?>()
-	private val imageList = intArrayOf(
-		R.drawable.ic_alcohol,
-		R.drawable.ic_products,
-		R.drawable.ic_taxi,
-		R.drawable.ic_bank,
-		R.drawable.ic_clothes,
-		R.drawable.ic_fun,
-		R.drawable.ic_gift,
-		R.drawable.ic_house,
-		R.drawable.ic_medical,
-		R.drawable.ic_salary,
-		R.drawable.ic_study,
-		R.drawable.ic_cafe
-	)
+
 
 
 	@RequiresApi(Build.VERSION_CODES.O)
@@ -112,7 +100,7 @@ class MainFragment : Fragment() {
 
 				intent.putExtra("operation",1)
 
-				intent.putExtra("images", imageList)
+				intent.putExtra("images", ArrayResources.icons)
 
 				startActivityForResult(intent,0)
 			}
@@ -122,7 +110,7 @@ class MainFragment : Fragment() {
 
 				intent.putExtra("operation",-1)
 
-				intent.putExtra("images", imageList)
+				intent.putExtra("images", ArrayResources.icons)
 
 				startActivityForResult(intent,0)
 			}
@@ -222,7 +210,7 @@ class MainFragment : Fragment() {
 		binding.tvEmptyOperations.visibility = View.INVISIBLE
 
 		for (operation in operationsList) {
-			val listData = ListData( imageList[operation.type], operation.title, operation.amount )
+			val listData = ListData( ArrayResources.icons[operation.type], operation.title, operation.amount )
 			dataArrayList.add(listData)
 		}
 
@@ -323,71 +311,56 @@ class MainFragment : Fragment() {
 				pieChart.setCenterTextColor(getColor(requireContext(), R.color.red_crimson))
 		}
 
-//
-//		// Диаграмма и свойства
-//
-//		val entries: ArrayList<PieEntry> = ArrayList()
-//
-//		val operations = db.getPeriodOperations(db.getCurrentPeriod().id)
-//
-//		val typesExpenses: MutableMap<Int, Double> = mutableMapOf()
-//
-//		if (operations.isEmpty()){
-//			entries.add(PieEntry(1f))
-//		}
-//		else{
-//			operations.forEach {
-//				if (typesExpenses.containsKey(it.type)){
-//					var oldValue = typesExpenses.get(it.type)!!
-//
-//					typesExpenses[it.type] = abs(oldValue) + abs(it.amount)
-//				}
-//				else{
-//					typesExpenses[it.type] = it.amount
-//				}
-//			}
-//
-//			typesExpenses.forEach{
-//				entries.add(PieEntry(abs(it.value.toFloat())))
-//			}
-//		}
-//
-//
-//		val dataSet = PieDataSet(entries, "Категории")
-//
-//		dataSet.sliceSpace = 0f
-//
-//		dataSet.setDrawValues(false)
-//
-//		val colors: ArrayList<Int> = ArrayList()
-//
-//		if (entries.count() == 1 && entries[0].value == 1f){
-//			colors.add(getColor(requireContext(), R.color.gray_dark))
-//		}
-//		else{
-//			colors.addAll(
-//				listOf(
-//					getColor(requireContext(), R.color.orange_dark),
-//					getColor(requireContext(), R.color.violet_dark),
-//					getColor(requireContext(), R.color.blue_light),
-//					getColor(requireContext(), R.color.chocolate),
-//					getColor(requireContext(), R.color.gold),
-//					getColor(requireContext(), R.color.green_light),
-//					getColor(requireContext(), R.color.red_crimson),
-//					getColor(requireContext(), R.color.blue_medium),
-//					getColor(requireContext(), R.color.green_dark),
-//					getColor(requireContext(), R.color.gold_dark),
-//					getColor(requireContext(), R.color.violet_medium),
-//					getColor(requireContext(), R.color.blue_dark),
-//				))
-//		}
-//
-//		dataSet.colors = colors
-//
-//		val data = PieData(dataSet)
-//
-//		pieChart.data = data
-//
-//		pieChart.invalidate()
+		// Диаграмма и свойства
+
+		val entries: ArrayList<PieEntry> = ArrayList()
+
+		val operations = db.getPeriodOperations(db.getCurrentPeriod().id)
+
+		val typesExpenses: MutableMap<Int, Double> = mutableMapOf()
+
+		if (operations.isEmpty()){
+			entries.add(PieEntry(1f))
+		}
+		else{
+			operations.forEach {
+				if (typesExpenses.containsKey(it.type)){
+					var oldValue = typesExpenses.get(it.type)!!
+
+					typesExpenses[it.type] = abs(oldValue) + abs(it.amount)
+				}
+				else{
+					typesExpenses[it.type] = it.amount
+				}
+			}
+
+			typesExpenses.forEach{
+				entries.add(PieEntry(abs(it.value.toFloat())))
+			}
+		}
+
+
+		val dataSet = PieDataSet(entries, "Категории")
+
+		dataSet.sliceSpace = 0f
+
+		dataSet.setDrawValues(false)
+
+		val colors: ArrayList<Int> = ArrayList()
+
+		if (entries.count() == 1 && entries[0].value == 1f){
+			colors.add(getColor(requireContext(), R.color.gray_dark))
+		}
+		else{
+			colors.addAll(ArrayResources.getPieColor(requireContext()).toList())
+		}
+
+		dataSet.colors = colors
+
+		val data = PieData(dataSet)
+
+		pieChart.data = data
+
+		pieChart.invalidate()
 	}
 }
