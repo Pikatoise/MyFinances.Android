@@ -27,6 +27,7 @@ import com.example.myfinances.R
 import com.example.myfinances.Toasts
 import com.example.myfinances.api.repositories.ApiAuthRepository
 import com.example.myfinances.api.repositories.ApiCurrencyRepository
+import com.example.myfinances.api.repositories.ApiPeriodRepository
 import com.example.myfinances.api.repositories.ApiTokenRepository
 import com.example.myfinances.databinding.FragmentMainBinding
 import com.example.myfinances.db.AccessDataRepository
@@ -63,7 +64,9 @@ class MainFragment : Fragment() {
 	private lateinit var apiTokenRepo: ApiTokenRepository
 	private lateinit var accessDataRepo: AccessDataRepository
 	private lateinit var apiCurrencyRepo: ApiCurrencyRepository
+	private lateinit var apiPeriodRepo: ApiPeriodRepository
 
+	private var currentPeriodId: Int = -1
 	private lateinit var operationsList: ArrayList<Operation>
 	private var dataArrayList = ArrayList<ListData?>()
 	private val imageList = intArrayOf(
@@ -91,12 +94,17 @@ class MainFragment : Fragment() {
 
 		val sharedPreferencesContext = this@MainFragment.requireContext().getSharedPreferences(AccessDataRepository.preferencesName, MODE_PRIVATE)
 		accessDataRepo = AccessDataRepository(sharedPreferencesContext)
+
+		val accessToken = accessDataRepo.getAccessToken()!!
+
 		apiAuthRepo = ApiAuthRepository()
 		apiTokenRepo = ApiTokenRepository()
-		apiCurrencyRepo = ApiCurrencyRepository(accessDataRepo.getAccessToken()!!)
+		apiPeriodRepo = ApiPeriodRepository(accessToken)
+		apiCurrencyRepo = ApiCurrencyRepository(accessToken)
 
 		binding.apply {
 			tvCurrencyUsd.setOnClickListener {
+
 			}
 
 			buttonPlus.setOnClickListener {
@@ -129,19 +137,18 @@ class MainFragment : Fragment() {
 			}
 		}
 
-		// Инициализация БД
-//		db = OperationRepository(this.requireContext())
-
-		// Инициализация текущего периода
-//		db.updateCurrentPeriod()
-
 		// Настройка диаграммы
 		configPieChart(binding.pieChart)
 
-		// Загрузка данных из бд
-//		updateData()
-
+		// Запрос валют
 		fillCurrencyFromApi()
+
+		fetchCurrentPeriod { periodId ->
+			currentPeriodId = periodId
+
+			// Загрузка данных из бд
+			updateData()
+		}
 
 		return binding.root
 	}
@@ -163,9 +170,38 @@ class MainFragment : Fragment() {
 		}
 	}
 
+	private fun fetchCurrentPeriod(callBackWithPeriodId: (periodId: Int) -> Unit){
+		val userId = accessDataRepo.getUserId()
+
+		val requestCurrentPeriod = CoroutineScope(Dispatchers.Main).async {
+			apiPeriodRepo.sendCurrentPeriodRequest(userId).await()
+		}
+
+		requestCurrentPeriod.invokeOnCompletion {
+			val resultCurrentPeriod = runBlocking { requestCurrentPeriod.await() }
+
+			if (resultCurrentPeriod.isSuccessful){
+				callBackWithPeriodId(resultCurrentPeriod.success!!.data.id)
+			}
+			else if (resultCurrentPeriod.error != null && resultCurrentPeriod.error.status == 404){
+				val requestNewPeriod = CoroutineScope(Dispatchers.Main).async {
+					apiPeriodRepo.sendCreatePeriodRequest(userId).await()
+				}
+
+				requestNewPeriod.invokeOnCompletion {
+					val resultNewPeriod = runBlocking { requestNewPeriod.await() }
+
+					if (resultNewPeriod.isSuccessful){
+						callBackWithPeriodId(resultNewPeriod.success!!.data.id)
+					}
+				}
+			}
+		}
+	}
+
 	@RequiresApi(Build.VERSION_CODES.O)
 	private fun updateData(){
-		fillPieChart(binding.pieChart)
+		//fillPieChart(binding.pieChart)
 
 		//fillMonthOperations()
 	}
@@ -225,9 +261,7 @@ class MainFragment : Fragment() {
 				binding.tvCurrencyUsd.text = NumberFormats.FormatToRuble(currency)
 			}
 			else{
-				binding.tvCurrencyUsd.text = "-,--"
-
-				Toast.makeText(this@MainFragment.requireContext(), response.error!!.errors.code, Toast.LENGTH_SHORT).show()
+				binding.tvCurrencyUsd.text = getString(R.string.usd_to_ruble)
 			}
 		}
 
@@ -240,9 +274,7 @@ class MainFragment : Fragment() {
 				binding.tvCurrencyEuro.text = NumberFormats.FormatToRuble(currency)
 			}
 			else{
-				binding.tvCurrencyUsd.text = "-,--"
-
-				Toast.makeText(this@MainFragment.requireContext(), response.error!!.errors.code, Toast.LENGTH_SHORT).show()
+				binding.tvCurrencyEuro.text = getString(R.string.euro_to_ruble)
 			}
 		}
 	}
@@ -257,6 +289,7 @@ class MainFragment : Fragment() {
 
 		pieChart.setDrawCenterText(true)
 		pieChart.setCenterTextSize(24f)
+		pieChart.setCenterTextColor(getColor(requireContext(), R.color.black))
 
 		pieChart.isRotationEnabled = false
 		pieChart.isHighlightPerTapEnabled = false
@@ -270,22 +303,26 @@ class MainFragment : Fragment() {
 	}
 
 	private fun fillPieChart(pieChart: PieChart){
+		// Месячный бюджет
+		val request = CoroutineScope(Dispatchers.Main).async {
+			apiPeriodRepo.sendProfitOfPeriodRequest(currentPeriodId).await()
+		}
 
+		request.invokeOnCompletion {
+			val response = runBlocking { request.await() }
+			var expenses = 0.0
 
-//		// Месячный бюджет
-//		val expenses = db.getMonthlyExpensesInRub(db.getCurrentPeriod())
-//
-//		if (expenses == 0.0){
-//			pieChart.setCenterTextColor(getColor(requireContext(), R.color.black))
-//		}
-//		else if (expenses > 0){
-//			pieChart.setCenterTextColor(getColor(requireContext(), R.color.green_main))
-//		}
-//		else{
-//			pieChart.setCenterTextColor(getColor(requireContext(), R.color.red_crimson))
-//		}
-//
-//		pieChart.centerText = NumberFormats.FormatToRuble(expenses)
+			if (response.isSuccessful)
+				expenses = response.success!!.data
+
+			pieChart.centerText = NumberFormats.FormatToRuble(expenses)
+
+			if (expenses > 0)
+				pieChart.setCenterTextColor(getColor(requireContext(), R.color.green_main))
+			else if (expenses < 0)
+				pieChart.setCenterTextColor(getColor(requireContext(), R.color.red_crimson))
+		}
+
 //
 //		// Диаграмма и свойства
 //

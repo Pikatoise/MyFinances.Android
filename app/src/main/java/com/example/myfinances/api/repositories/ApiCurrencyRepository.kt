@@ -21,7 +21,7 @@ import okhttp3.Request
 import java.io.Console
 import java.io.IOException
 
-class ApiCurrencyRepository constructor(private val accessToken: String) {
+class ApiCurrencyRepository(private val accessToken: String) {
     private val client = ApiClient.instance as OkHttpClient
     private val url = "https://api.myfinances.tw1.ru/api/Currency/"
 
@@ -33,8 +33,6 @@ class ApiCurrencyRepository constructor(private val accessToken: String) {
             .get()
             .addHeader("Authorization", "Bearer " + accessToken)
             .build()
-
-        Log.i("*******", accessToken)
 
         try{
             val response = client.newCall(request).execute()

@@ -104,6 +104,7 @@ class ApiTokenRepository {
     @RequiresApi(Build.VERSION_CODES.O)
     fun tryPassSavedTokens(accessDataRepo: AccessDataRepository): Boolean {
         val refreshTime = accessDataRepo.getLastRefresh()
+        var canAccess = false
 
         if (!refreshTime.isNullOrBlank()) {
             val refreshTimeParsed = LocalDateTime.parse(refreshTime)
@@ -111,7 +112,7 @@ class ApiTokenRepository {
             val isAccessTokenExpired = checkAccessTokenExpired(refreshTimeParsed)
 
             if (!isAccessTokenExpired)
-                return true
+                canAccess = true
             else {
                 val isRefreshTokenExpired = checkRefreshTokenExpired(refreshTimeParsed)
 
@@ -119,27 +120,23 @@ class ApiTokenRepository {
                     val refreshToken = accessDataRepo.getRefreshToken() as String
                     val accessToken = accessDataRepo.getAccessToken() as String
 
-                    val request = CoroutineScope(Dispatchers.Main).async {
+                    val result = runBlocking {
                         sendRefreshTokenRequest(accessToken, refreshToken).await()
                     }
 
-                    request.invokeOnCompletion {
-                        val result = runBlocking { request.await() }
+                    if (result.isSuccessful) {
+                        val newTokens = result.success!!.data
 
-                        if (result.isSuccessful) {
-                            val newTokens = result.success!!.data
+                        accessDataRepo.updateAccessToken(newTokens.accessToken)
+                        accessDataRepo.updateRefreshToken(newTokens.refreshToken)
+                        accessDataRepo.updateLastRefresh(LocalDateTime.now())
 
-                            accessDataRepo.updateAccessToken(newTokens.accessToken)
-                            accessDataRepo.updateRefreshToken(newTokens.refreshToken)
-                            accessDataRepo.updateLastRefresh(LocalDateTime.now())
-                        }
+                        canAccess = true
                     }
-
-                    return true
                 }
             }
         }
 
-        return false
+        return canAccess
     }
 }
