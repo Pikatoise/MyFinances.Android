@@ -11,6 +11,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
+import coil.ImageLoader
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
 import com.example.myfinances.db.Plan
 import com.example.myfinances.R
 
@@ -33,28 +36,14 @@ class PlanItemAdapter(
 			currentView = LayoutInflater.from(context).inflate(R.layout.plans_list_plan_item, parent, false)
 		}
 
-		val imageList = intArrayOf(
-            R.drawable.ic_alcohol,
-            R.drawable.ic_products,
-            R.drawable.ic_taxi,
-            R.drawable.ic_bank,
-            R.drawable.ic_clothes,
-            R.drawable.ic_fun,
-            R.drawable.ic_gift,
-            R.drawable.ic_house,
-            R.drawable.ic_medical,
-            R.drawable.ic_salary,
-            R.drawable.ic_study,
-            R.drawable.ic_cafe
-		)
-
-		val tvName = currentView!!.findViewById<TextView>(R.id.tv_plan_name)
+		val ivIcon = currentView!!.findViewById<ImageView>(R.id.iv_plan_icon)
+		val tvName = currentView.findViewById<TextView>(R.id.tv_plan_name)
 		val cbStatus = currentView.findViewById<CheckBox>(R.id.cb_plan_status)
-		val ivIcon = currentView.findViewById<ImageView>(R.id.iv_plan_icon)
 		val clPlanItem = currentView.findViewById<ConstraintLayout>(R.id.cl_plan_item)
 
+		val iconPath = "https://api.myfinances.tw1.ru/images/${planItem.typePath}"
+		ivIcon.loadSvg(iconPath)
 		tvName.text = planItem.name
-		ivIcon.setImageResource(imageList[planItem.type])
 		cbStatus.isChecked = planItem.status
 		cbStatus.setOnClickListener {
 			cbStatus(cbStatus.isChecked,planItem.id)
@@ -64,5 +53,20 @@ class PlanItemAdapter(
 		}
 
 		return currentView
+	}
+
+	fun ImageView.loadSvg(url: String) {
+		val imageLoader = ImageLoader.Builder(this.context)
+			.componentRegistry { add(SvgDecoder(this@loadSvg.context)) }
+			.build()
+
+		val request = ImageRequest.Builder(this.context)
+			.crossfade(true)
+			.crossfade(500)
+			.data(url)
+			.target(this)
+			.build()
+
+		imageLoader.enqueue(request)
 	}
 }

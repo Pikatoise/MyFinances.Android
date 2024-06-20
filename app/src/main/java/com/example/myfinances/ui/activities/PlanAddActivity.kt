@@ -8,14 +8,12 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import com.example.myfinances.db.Plan
-import com.example.myfinances.db.PlanRepository
 import com.example.myfinances.R
 import com.example.myfinances.lists.SpinnerAdapter
 import com.example.myfinances.databinding.ActivityPlanAddBinding
 
 class PlanAddActivity : AppCompatActivity() {
 	private lateinit var binding: ActivityPlanAddBinding
-	private lateinit var db: PlanRepository
 	private var isUserInteracting: Boolean = false
 	val imageList = intArrayOf(
         R.drawable.ic_alcohol,
@@ -37,8 +35,6 @@ class PlanAddActivity : AppCompatActivity() {
 		super.onCreate(savedInstanceState)
 
 		binding = ActivityPlanAddBinding.inflate(layoutInflater)
-
-		db = PlanRepository(this)
 
 		setContentView(binding.root)
 
@@ -90,8 +86,8 @@ class PlanAddActivity : AppCompatActivity() {
 				val type = spinnerType.selectedItemPosition
 				val status = false
 
-				var plan = Plan(-1,name,date,type,status)
-				db.addPlan(plan)
+//				var plan = Plan(-1,name,date,type,status)
+//				db.addPlan(plan)
 
 				Toast.makeText(this@PlanAddActivity,"Успешно",Toast.LENGTH_SHORT).show()
 

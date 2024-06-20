@@ -72,14 +72,14 @@ data class Period(var id: Int, var year: Int, var month: Int, var isCurrent: Boo
 	}
 }
 
-data class Plan(var id: Int, var name: String, var date: String, var type: Int, var status: Boolean):
+data class Plan(var id: Int, var name: String, var date: String, var typePath: String, var status: Boolean):
 	Parcelable {
 	@RequiresApi(Build.VERSION_CODES.Q)
 	constructor(parcel: Parcel) : this(
 		parcel.readInt(),
 		parcel.readString() as String,
 		parcel.readString() as String,
-		parcel.readInt(),
+		parcel.readString() as String,
 		parcel.readBoolean()
 	)
 
@@ -88,7 +88,7 @@ data class Plan(var id: Int, var name: String, var date: String, var type: Int, 
 		parcel.writeInt(id)
 		parcel.writeString(name)
 		parcel.writeString(date)
-		parcel.writeInt(type)
+		parcel.writeString(typePath)
 		parcel.writeBoolean(status)
 	}
 
