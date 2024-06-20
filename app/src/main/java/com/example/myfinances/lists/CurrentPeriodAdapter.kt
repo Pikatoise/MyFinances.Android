@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat.getColor
 import coil.ImageLoader
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
+import com.example.myfinances.NumberFormats
 import com.example.myfinances.R
 import com.example.myfinances.api.models.operationType.OperationTypeResponse
 
@@ -35,7 +36,7 @@ class CurrentPeriodAdapter(
 		val iconPath = "https://api.myfinances.tw1.ru/images/${types.find { x -> x.id == item.typeId }!!.iconSrc}"
 		itemImage.loadSvg(iconPath)
 		itemTitle.text = item.title
-		itemAmount.text = item.amount.toString() + " ₽"
+		itemAmount.text = NumberFormats.FormatToRuble(item.amount)
 
 		if (item.amount < 0)
 			itemAmount.setTextColor(getColor(context, R.color.red_crimson))

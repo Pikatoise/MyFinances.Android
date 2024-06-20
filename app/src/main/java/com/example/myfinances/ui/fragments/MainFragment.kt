@@ -104,9 +104,9 @@ class MainFragment : Fragment() {
 			}
 
 			llAllOperations.setOnClickListener {
-//				val intent = Intent(activity, AllOperationsActivity::class.java)
-//
-//				startActivity(intent)
+				val intent = Intent(activity, AllOperationsActivity::class.java)
+
+				startActivity(intent)
 			}
 
 			lvOperationsMonth.setOnItemClickListener { _, _, position, _ ->
@@ -412,7 +412,6 @@ class MainFragment : Fragment() {
 
 		pieChart.setDrawCenterText(true)
 		pieChart.setCenterTextSize(28f)
-		pieChart.setCenterTextColor(getColor(requireContext(), R.color.black))
 
 		pieChart.isRotationEnabled = false
 		pieChart.isHighlightPerTapEnabled = false
@@ -423,6 +422,12 @@ class MainFragment : Fragment() {
 		pieChart.highlightValues(null)
 
 		// Создание пустой диаграммы
+		clearPieChart()
+	}
+
+	private fun clearPieChart(){
+		binding.pieChart.clear()
+
 		val entries: ArrayList<PieEntry> = ArrayList()
 		val colors: ArrayList<Int> = ArrayList()
 
@@ -436,14 +441,17 @@ class MainFragment : Fragment() {
 
 		dataSet.colors = colors
 
-		pieChart.data = PieData(dataSet)
+		binding.pieChart.data = PieData(dataSet)
 
-		pieChart.centerText = NumberFormats.FormatToRuble(0.0)
+		binding.pieChart.centerText = NumberFormats.FormatToRuble(0.0)
+		binding.pieChart.setCenterTextColor(getColor(requireContext(), R.color.black))
 
-		pieChart.invalidate()
+		binding.pieChart.invalidate()
 	}
 
 	private fun fillPieChart(pieChart: PieChart){
+		clearPieChart()
+
 		// Месячный бюджет
 		val requestProfitOfPeriod = CoroutineScope(Dispatchers.Main).async {
 			apiPeriodRepo.sendProfitOfPeriodRequest(currentPeriodId).await()

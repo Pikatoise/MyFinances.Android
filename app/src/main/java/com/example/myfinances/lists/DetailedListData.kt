@@ -1,7 +1,7 @@
 package com.example.myfinances.lists
 
 class DetailedListData (
-	var image: Int,
+	var imageSrc: String,
 	var name: String,
 	var amount: Double,
 	var year: Int,

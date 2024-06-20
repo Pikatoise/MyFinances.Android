@@ -3,78 +3,137 @@ package com.example.myfinances.ui.activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.ReportFragment.Companion.reportFragment
 import com.example.myfinances.lists.DetailedListAdapter
 import com.example.myfinances.lists.DetailedListData
 import com.example.myfinances.db.Operation
 import com.example.myfinances.db.Period
 import com.example.myfinances.R
+import com.example.myfinances.api.repositories.ApiOperationRepository
+import com.example.myfinances.api.repositories.ApiOperationTypeRepository
+import com.example.myfinances.api.repositories.ApiPeriodRepository
 import com.example.myfinances.databinding.ActivityAllOperationsBinding
+import com.example.myfinances.db.AccessDataRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 
 class AllOperationsActivity : AppCompatActivity() {
 	private lateinit var binding: ActivityAllOperationsBinding
-	private lateinit var periods: ArrayList<Period>
-	private lateinit var operations: ArrayList<Operation>
-	private val imageList = intArrayOf(
-        R.drawable.ic_alcohol,
-        R.drawable.ic_products,
-        R.drawable.ic_taxi,
-        R.drawable.ic_bank,
-        R.drawable.ic_clothes,
-        R.drawable.ic_fun,
-        R.drawable.ic_gift,
-        R.drawable.ic_house,
-        R.drawable.ic_medical,
-        R.drawable.ic_salary,
-        R.drawable.ic_study,
-        R.drawable.ic_cafe
-	)
+
+	private lateinit var apiPeriodRepo: ApiPeriodRepository
+	private lateinit var apiOperationRepo: ApiOperationRepository
+	private lateinit var apiTypesRepo: ApiOperationTypeRepository
+	private lateinit var accessDataRepo: AccessDataRepository
+
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 
 		binding = ActivityAllOperationsBinding.inflate(layoutInflater)
 
-		setContentView(binding.root)
+		val sharedPreferencesContext = getSharedPreferences(AccessDataRepository.preferencesName, MODE_PRIVATE)
+		accessDataRepo = AccessDataRepository(sharedPreferencesContext)
+
+		val accessToken = accessDataRepo.getAccessToken()!!
+
+		apiPeriodRepo = ApiPeriodRepository(accessToken)
+		apiOperationRepo = ApiOperationRepository(accessToken)
+		apiTypesRepo = ApiOperationTypeRepository(accessToken)
 
 		binding.ivAllOperationsBackBtn.setOnClickListener{
 			finish()
 		}
 
-		val intent = this.intent
+		fillAllOperations()
 
-		if (intent != null){
-			operations = intent.getParcelableArrayListExtra<Operation>("operations")!!
-			periods = intent.getParcelableArrayListExtra<Period>("periods")!!
-
-			fillAllOperations()
-		}
+		setContentView(binding.root)
 	}
 
 	private fun fillAllOperations(){
-		val detailedDataArrayList = ArrayList<DetailedListData?>()
+		val detailedDataArrayList = ArrayList<DetailedListData>()
 
-		if (operations.isEmpty()){
-			binding.tvEmptyOperations.visibility = View.VISIBLE
-
-			return
+		val requestAllPeriods = CoroutineScope(Dispatchers.Main).async {
+			apiPeriodRepo.sendAllPeriodsRequest(accessDataRepo.getUserId()).await()
 		}
 
-		binding.tvEmptyOperations.visibility = View.INVISIBLE
+		requestAllPeriods.invokeOnCompletion {
+			val responseAllPeriods = runBlocking { requestAllPeriods.await() }
 
-		for (operation in operations) {
-			val period = periods.first { period: Period -> period.id == operation.periodId  }
+			if (responseAllPeriods.isSuccessful){
+				val periods = responseAllPeriods.success!!.data
 
-			val detailedListData = DetailedListData(
-				imageList[operation.type],
-				operation.title,
-				operation.amount,
-				period.year,
-				period.month
-			)
-			detailedDataArrayList.add(detailedListData)
+				val periodWithOperations = ArrayList<ArrayList<DetailedListData>>()
+
+				for (i in 0..periods.size)
+					periodWithOperations.add(ArrayList<DetailedListData>())
+
+				val requestTypes = CoroutineScope(Dispatchers.Main).async {
+					apiTypesRepo.sendAllTypesRequest().await()
+				}
+
+				requestTypes.invokeOnCompletion {
+					val responseTypes = runBlocking { requestTypes.await() }
+
+					if (responseTypes.isSuccessful) {
+						val types = responseTypes.success!!.data
+
+						for(i in 0..periods.size - 1){
+							val requestOperations = CoroutineScope(Dispatchers.Main).async {
+								apiOperationRepo.sendOperationsByPeriodRequest(periods[i].id).await()
+							}
+
+							requestOperations.invokeOnCompletion {
+								val responseOperations = runBlocking { requestOperations.await() }
+
+								if (responseOperations.isSuccessful){
+									val operations = responseOperations.success!!.data
+									operations.reverse()
+
+									if (operations.isNotEmpty()){
+										for (operation in operations){
+											val detailedListData = DetailedListData(
+												types.find { x -> x.id == operation.typeId }!!.iconSrc,
+												operation.title,
+												operation.amount,
+												periods[i].year,
+												periods[i].month
+											)
+
+											periodWithOperations[i].add(detailedListData)
+										}
+									}
+
+									if (i == periods.size - 1){
+										periodWithOperations.reverse()
+
+										periodWithOperations.forEach {
+											it.forEach{
+												detailedDataArrayList.add(it)
+											}
+										}
+
+										if (detailedDataArrayList.isNotEmpty()){
+											binding.tvAllOperationsEmpty.visibility = View.INVISIBLE
+
+											val listAdapter = DetailedListAdapter(this@AllOperationsActivity, detailedDataArrayList)
+											binding.lvAllOperations.adapter = listAdapter
+										}
+										else
+											binding.tvAllOperationsEmpty.visibility = View.VISIBLE
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			else{
+				binding.tvAllOperationsEmpty.visibility = View.VISIBLE
+
+				return@invokeOnCompletion
+			}
 		}
-
-		val listAdapter = DetailedListAdapter(this@AllOperationsActivity, detailedDataArrayList)
-		binding.lvAllOperations.adapter = listAdapter
 	}
 }

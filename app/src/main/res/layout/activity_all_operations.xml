@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTint="@color/white"
+    android:background="@color/white"
     tools:context=".ui.activities.AllOperationsActivity"
     android:orientation="vertical">
 
@@ -21,7 +23,7 @@
             app:layout_constraintTop_toTopOf="parent"/>
 
         <TextView
-            android:id="@+id/tv_operation"
+            android:id="@+id/tv_all_operations_operation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="История операций"
@@ -34,7 +36,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp">
         <ListView
             android:id="@+id/lv_all_operations"
             android:layout_width="match_parent"
@@ -42,13 +45,15 @@
             tools:listitem="@layout/detailed_list_item"
             android:divider="@android:color/transparent"
             android:dividerHeight="10.0sp"
+            android:scrollbars="none"
+            android:layout_marginHorizontal="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
         <TextView
-            android:id="@+id/tv_empty_operations"
+            android:id="@+id/tv_all_operations_empty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/main_empty_operations"

@@ -219,10 +219,10 @@
                 android:visibility="invisible"
                 android:textSize="32sp"
                 android:textStyle="bold"
+                android:layout_marginTop="80dp"
                 app:layout_constraintTop_toBottomOf="@id/cl_operations"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintEnd_toEndOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

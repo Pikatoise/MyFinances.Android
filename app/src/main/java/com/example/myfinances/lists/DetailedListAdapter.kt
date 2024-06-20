@@ -10,51 +10,73 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import coil.ImageLoader
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
+import com.example.myfinances.NumberFormats
 import com.example.myfinances.R
 
-class DetailedListAdapter(context: Context, dataArrayList: ArrayList<DetailedListData?>?) :
-	ArrayAdapter<DetailedListData?>(context, R.layout.detailed_list_item, dataArrayList!!) {
+class DetailedListAdapter(
+	context: Context,
+	dataArrayList: ArrayList<DetailedListData>) :
+	ArrayAdapter<DetailedListData>(context, R.layout.detailed_list_item, dataArrayList) {
 
 	@RequiresApi(Build.VERSION_CODES.O)
 	override fun getView(position: Int, view: View?, parent: ViewGroup): View {
 		var currentView = view
-		val detailedListData = getItem(position)
+		val detailedListData = getItem(position)!!
 
 		if (currentView == null) {
 			currentView = LayoutInflater.from(context).inflate(R.layout.detailed_list_item, parent, false)
 		}
 
-		val listImage = currentView!!.findViewById<ImageView>(R.id.listImage)
-		val listName = currentView.findViewById<TextView>(R.id.listName)
-		val listAmount = currentView.findViewById<TextView>(R.id.listAmount)
-		val listYear = currentView.findViewById<TextView>(R.id.listYear)
-		val listMonth = currentView.findViewById<TextView>(R.id.listMonth)
+		val itemImage = currentView!!.findViewById<ImageView>(R.id.iv_detailed_item_icon)
+		val itemTitle = currentView.findViewById<TextView>(R.id.tv_detailed_item_title)
+		val itemAmount = currentView.findViewById<TextView>(R.id.tv_detailed_item_amount)
+		val itemYear = currentView.findViewById<TextView>(R.id.tv_detailed_item_year)
+		val itemMonth = currentView.findViewById<TextView>(R.id.tv_detailed_item_month)
 
-		listImage.setImageResource(detailedListData!!.image)
-		listName.text = detailedListData.name
-		listAmount.text = detailedListData.amount.toString() + " ₽"
-		listYear.text = detailedListData.year.toString()
+		val iconPath = "https://api.myfinances.tw1.ru/images/${detailedListData.imageSrc}"
+		itemImage.loadSvg(iconPath)
+		itemTitle.text = detailedListData.name
+		itemAmount.text = NumberFormats.FormatToRuble(detailedListData.amount)
+		itemYear.text = detailedListData.year.toString()
 
 		when (detailedListData.month) {
-			1 -> listMonth.text = "Январь"
-			2 -> listMonth.text = "Февраль"
-			3 -> listMonth.text = "Март"
-			4 -> listMonth.text = "Апрель"
-			5 -> listMonth.text = "Май"
-			6 -> listMonth.text = "Июнь"
-			7 -> listMonth.text = "Июль"
-			8 -> listMonth.text = "Август"
-			9 -> listMonth.text = "Сентябрь"
-			10 -> listMonth.text = "Октябрь"
-			11 -> listMonth.text = "Ноябрь"
-			12 -> listMonth.text = "Декабрь"
+			1 -> itemMonth.text = "Январь"
+			2 -> itemMonth.text = "Февраль"
+			3 -> itemMonth.text = "Март"
+			4 -> itemMonth.text = "Апрель"
+			5 -> itemMonth.text = "Май"
+			6 -> itemMonth.text = "Июнь"
+			7 -> itemMonth.text = "Июль"
+			8 -> itemMonth.text = "Август"
+			9 -> itemMonth.text = "Сентябрь"
+			10 -> itemMonth.text = "Октябрь"
+			11 -> itemMonth.text = "Ноябрь"
+			12 -> itemMonth.text = "Декабрь"
 		}
 
 		if (detailedListData.amount < 0)
-			listAmount.setTextColor(ContextCompat.getColor(context, R.color.red_crimson))
+			itemAmount.setTextColor(ContextCompat.getColor(context, R.color.red_crimson))
 		else
-			listAmount.setTextColor(ContextCompat.getColor(context, R.color.green_main))
+			itemAmount.setTextColor(ContextCompat.getColor(context, R.color.green_main))
 
 		return currentView
+	}
+
+	fun ImageView.loadSvg(url: String) {
+		val imageLoader = ImageLoader.Builder(this.context)
+			.componentRegistry { add(SvgDecoder(this@loadSvg.context)) }
+			.build()
+
+		val request = ImageRequest.Builder(this.context)
+			.crossfade(true)
+			.crossfade(500)
+			.data(url)
+			.target(this)
+			.build()
+
+		imageLoader.enqueue(request)
 	}
 }
