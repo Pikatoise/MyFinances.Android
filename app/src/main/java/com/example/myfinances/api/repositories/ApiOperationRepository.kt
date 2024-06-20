@@ -18,8 +18,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 
 class ApiOperationRepository(private val accessToken: String) {
@@ -103,6 +105,46 @@ class ApiOperationRepository(private val accessToken: String) {
         val request = Request.Builder()
             .url(url + endpoint)
             .delete()
+            .addHeader("Authorization", "Bearer " + accessToken)
+            .build()
+
+        try{
+            val response = client.newCall(request).execute()
+            val responseBody = response.body?.string()
+
+            if (response.isSuccessful) {
+                return@async BaseResult<Boolean>(SuccessResponse(true), null)
+            }
+            else{
+                val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+                val errorAdapter = moshi.adapter(ErrorResponse::class.java)
+
+                val errorResponse = responseBody?.let { errorAdapter.fromJson(it) }
+
+                return@async BaseResult(null, errorResponse)
+            }
+        } catch(e: IOException){
+            return@async BaseResult(null, RequestError)
+        }
+    }
+
+    fun sendAddOperationRequest(periodId: Int, title: String, amount: Double, typeId: Int): Deferred<BaseResult<Boolean>> = CoroutineScope(Dispatchers.IO).async {
+        val endpoint = "add"
+
+        val json = """
+            {
+              "periodId": "$periodId",
+              "title": "$title",
+              "amount": "$amount",
+              "typeId": "$typeId"
+            }
+            """.trimIndent()
+
+        val requestBody = json.toRequestBody("application/json; charset=utf-8".toMediaType())
+
+        val request = Request.Builder()
+            .url(url + endpoint)
+            .post(requestBody)
             .addHeader("Authorization", "Bearer " + accessToken)
             .build()
 

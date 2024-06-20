@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.activities.OperationActivity"
     android:paddingTop="50dp"
-    android:background="@drawable/shape_gradient_main">
+    android:background="@color/white">
 
     <ImageView
         android:id="@+id/iv_back_btn"
@@ -21,7 +21,7 @@
         android:id="@+id/tv_operation"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        tools:text="Доход"
+        android:text="Операция"
         android:fontFamily="sans-serif-black"
         android:textSize="32sp"
         android:textStyle="bold"

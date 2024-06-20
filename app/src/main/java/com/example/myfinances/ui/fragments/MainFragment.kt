@@ -1,16 +1,30 @@
 package com.example.myfinances.ui.fragments
 
+import android.app.Dialog
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.icu.text.DecimalFormat
 import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.INVISIBLE
 import android.view.ViewGroup
+import android.view.Window
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.ListView
+import android.widget.RelativeLayout
+import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import androidx.core.content.ContextCompat.getColor
+import coil.ImageLoader
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
 import com.example.myfinances.ArrayResources
 import com.example.myfinances.Currencies
 import com.example.myfinances.ui.activities.AllOperationsActivity
@@ -23,6 +37,7 @@ import com.example.myfinances.db.OperationRepository
 import com.example.myfinances.R
 import com.example.myfinances.Toasts
 import com.example.myfinances.api.models.operation.OperationResponse
+import com.example.myfinances.api.models.operationType.OperationTypeResponse
 import com.example.myfinances.api.repositories.ApiAuthRepository
 import com.example.myfinances.api.repositories.ApiCurrencyRepository
 import com.example.myfinances.api.repositories.ApiOperationRepository
@@ -31,16 +46,19 @@ import com.example.myfinances.api.repositories.ApiPeriodRepository
 import com.example.myfinances.api.repositories.ApiTokenRepository
 import com.example.myfinances.databinding.FragmentMainBinding
 import com.example.myfinances.db.AccessDataRepository
+import com.example.myfinances.lists.TypeAdapter
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
+import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.Serializable
+import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlin.math.abs
 
 class MainFragment : Fragment() {
@@ -58,7 +76,6 @@ class MainFragment : Fragment() {
 	private var currentPeriodId: Int = -1
 	private lateinit var currentItems: List<OperationResponse>
 
-	@RequiresApi(Build.VERSION_CODES.O)
 	override fun onCreateView(
 		inflater: LayoutInflater, container: ViewGroup?,
 		savedInstanceState: Bundle?
@@ -78,37 +95,18 @@ class MainFragment : Fragment() {
 		apiTypesRepo = ApiOperationTypeRepository(accessToken)
 
 		binding.apply {
-			tvCurrencyUsd.setOnClickListener {
-
-			}
-
 			buttonPlus.setOnClickListener {
-				val intent = Intent(activity, OperationActivity::class.java)
-
-				intent.putExtra("operation",1)
-
-				intent.putExtra("images", ArrayResources.icons)
-
-				startActivityForResult(intent,0)
+				showCreateDialog(true)
 			}
 
 			buttonMinus.setOnClickListener {
-				val intent = Intent(activity, OperationActivity::class.java)
-
-				intent.putExtra("operation",-1)
-
-				intent.putExtra("images", ArrayResources.icons)
-
-				startActivityForResult(intent,0)
+				showCreateDialog(false)
 			}
 
 			llAllOperations.setOnClickListener {
-				val intent = Intent(activity, AllOperationsActivity::class.java)
-
-				intent.putExtra("periods", db.getAllPeriods())
-				intent.putExtra("operations", db.getAllOperations())
-
-				startActivity(intent)
+//				val intent = Intent(activity, AllOperationsActivity::class.java)
+//
+//				startActivity(intent)
 			}
 
 			lvOperationsMonth.setOnItemClickListener { _, _, position, _ ->
@@ -128,7 +126,6 @@ class MainFragment : Fragment() {
 						else
 							Toasts.failure(this@MainFragment.requireContext())
 					}
-
 				}
 				val manager = parentFragmentManager
 				dialogRemove.show(manager,"removeDialog")
@@ -139,7 +136,7 @@ class MainFragment : Fragment() {
 		configPieChart(binding.pieChart)
 
 		// Запрос валют
-		fillCurrencyFromApi()
+		//fillCurrencyFromApi()
 
 		fetchCurrentPeriod { periodId ->
 			currentPeriodId = periodId
@@ -151,19 +148,131 @@ class MainFragment : Fragment() {
 		return binding.root
 	}
 
-	@RequiresApi(Build.VERSION_CODES.O)
-	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-		super.onActivityResult(requestCode, resultCode, data)
+	fun showCreateDialog(isPlus: Boolean){
+		val dialog = Dialog(this.requireContext())
+		dialog.window!!.setBackgroundDrawableResource(android.R.color.transparent)
+		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+		dialog.setCancelable(false)
+		dialog.setContentView(R.layout.dialog_create_operation)
 
-		if (requestCode == 0) {
-			if (resultCode == AppCompatActivity.RESULT_OK) {
-				val title = data?.getStringExtra("title")
-				val amount = data?.getDoubleExtra("amount", 1.0)
-				val image = data?.getIntExtra("image", 0)
+		val ivExit = dialog.findViewById<ImageView>(R.id.iv_dialog_create_operation_exit)
+		val tvHeader = dialog.findViewById<TextView>(R.id.tv_dialog_create_operation_header)
+		val mcvIcon = dialog.findViewById<MaterialCardView>(R.id.mcv_dialog_create_operation_icon)
+		val ivIcon = dialog.findViewById<ImageView>(R.id.iv_dialog_create_operation)
+		val tvPreview = dialog.findViewById<TextView>(R.id.tv_dialog_create_operation_preview)
+		val etTitle = dialog.findViewById<EditText>(R.id.et_dialog_create_operation_title)
+		val etAmount = dialog.findViewById<EditText>(R.id.et_dialog_create_operation_amount)
+		val rlSave = dialog.findViewById<RelativeLayout>(R.id.rl_dialog_create_operation_save)
+		var selectedType: OperationTypeResponse? = null
 
-				db.addOperation(image,title,amount)
+		ivExit.setOnClickListener {
+			dialog.dismiss()
+		}
 
-				updateData()
+		if (isPlus){
+			tvHeader.text = "Доход"
+			mcvIcon.strokeColor = getColor(this.requireContext(), R.color.green_main)
+		}
+		else{
+			tvHeader.text = "Расход"
+			mcvIcon.strokeColor = getColor(this.requireContext(), R.color.red_crimson)
+		}
+
+		dialog.show()
+
+		val requestTypes = CoroutineScope(Dispatchers.Main).async {
+			apiTypesRepo.sendAllTypesRequest().await()
+		}
+		// Загрузка категорий и установка возможности выбора
+		requestTypes.invokeOnCompletion {
+			val responseTypes = runBlocking { requestTypes.await() }
+
+			if (responseTypes.isSuccessful){
+				val types = responseTypes.success!!.data
+
+				mcvIcon.setOnClickListener {
+					val dialogType = Dialog(this.requireContext())
+					dialogType.window!!.setBackgroundDrawableResource(android.R.color.transparent)
+					dialogType.requestWindowFeature(Window.FEATURE_NO_TITLE)
+					dialogType.setCancelable(false)
+					dialogType.setContentView(R.layout.dialog_select_type)
+
+					val ivExitType = dialogType.findViewById<ImageView>(R.id.iv_dialog_select_type_exit)
+					val lvTypes = dialogType.findViewById<ListView>(R.id.lv_dialog_select_type)
+
+					ivExitType.setOnClickListener {
+						dialogType.dismiss()
+					}
+
+					lvTypes.adapter = TypeAdapter(this.requireContext(),types.toList()) { position ->
+						selectedType = types[position]
+
+						tvPreview.visibility = INVISIBLE
+
+						val iconPath = "https://api.myfinances.tw1.ru/images/${selectedType!!.iconSrc}"
+						ivIcon.loadSvg(iconPath)
+
+						dialogType.dismiss()
+					}
+
+					dialogType.show()
+				}
+			}
+			else
+				dialog.dismiss()
+		}
+
+		rlSave.setOnClickListener {
+			fun EditText.getDouble(): Double = try {
+				BigDecimal(text.toString().toDouble()).setScale(2, RoundingMode.HALF_EVEN).toDouble()
+			} catch (e: NumberFormatException) {
+				e.printStackTrace()
+				0.0
+			}
+
+			var title = etTitle.text.toString().trim()
+			var amount = etAmount.getDouble()
+
+			if (!isPlus)
+				amount *= -1.0
+
+			if (title.isEmpty()){
+				Toast.makeText(this.requireContext(),"Введите описание", Toast.LENGTH_SHORT).show()
+				return@setOnClickListener
+			}
+
+			if (title.length > 30){
+				Toast.makeText(this.requireContext(),"Описание слишком длинное", Toast.LENGTH_SHORT).show()
+				return@setOnClickListener
+			}
+
+			if (amount == 0.0){
+				Toast.makeText(this.requireContext(),"Введите сумму", Toast.LENGTH_SHORT).show()
+				return@setOnClickListener
+			}
+
+			if (amount > 999_999.0 || amount < -999_999.0){
+				Toast.makeText(this.requireContext(),"Сумма слишком большая\n   (лимит +-999 тыс.)", Toast.LENGTH_SHORT).show()
+				return@setOnClickListener
+			}
+
+			if (selectedType == null){
+				Toast.makeText(this.requireContext(),"Выберите категорию", Toast.LENGTH_SHORT).show()
+				return@setOnClickListener
+			}
+
+			val requestCreate = CoroutineScope(Dispatchers.Main).async {
+				apiOperationRepo.sendAddOperationRequest(currentPeriodId, title, amount, selectedType!!.id).await()
+			}
+
+			requestCreate.invokeOnCompletion {
+				val responseCreate = runBlocking { requestCreate.await() }
+
+				if (responseCreate.isSuccessful){
+					updateData()
+				}
+
+				dialog.dismiss()
 			}
 		}
 	}
@@ -197,14 +306,12 @@ class MainFragment : Fragment() {
 		}
 	}
 
-	@RequiresApi(Build.VERSION_CODES.O)
 	private fun updateData(){
 		fillPieChart(binding.pieChart)
 
 		fillMonthOperations()
 	}
 
-	@RequiresApi(Build.VERSION_CODES.O)
 	private fun fillMonthOperations(){
 		binding.lvOperationsMonth.adapter = null
 
@@ -243,6 +350,8 @@ class MainFragment : Fragment() {
 						binding.tvEmptyOperations.visibility = View.INVISIBLE
 						binding.lvOperationsMonth.adapter = adapter
 						binding.lvOperationsMonth.isClickable = true
+
+						justifyListViewHeightBasedOnChildren(binding.lvOperationsMonth)
 					}
 					else{
 						binding.tvEmptyOperations.visibility = View.VISIBLE
@@ -386,5 +495,37 @@ class MainFragment : Fragment() {
 				pieChart.invalidate()
 			}
 		}
+	}
+
+	fun ImageView.loadSvg(url: String) {
+		val imageLoader = ImageLoader.Builder(this.context)
+			.componentRegistry { add(SvgDecoder(this@loadSvg.context)) }
+			.build()
+
+		val request = ImageRequest.Builder(this.context)
+			.crossfade(true)
+			.crossfade(500)
+			.data(url)
+			.target(this)
+			.build()
+
+		imageLoader.enqueue(request)
+	}
+
+	fun justifyListViewHeightBasedOnChildren(listView: ListView) {
+		val adapter = listView.adapter ?: return
+
+		val vg: ViewGroup = listView
+		var totalHeight = 0
+		for (i in 0 until adapter.count) {
+			val listItem = adapter.getView(i, null, vg)
+			listItem.measure(0, 0)
+			totalHeight += listItem.measuredHeight
+		}
+
+		val par = listView.layoutParams
+		par.height = totalHeight + (listView.dividerHeight * (adapter.count - 1)) + 50
+		listView.layoutParams = par
+		listView.requestLayout()
 	}
 }

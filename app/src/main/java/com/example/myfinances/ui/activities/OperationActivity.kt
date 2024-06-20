@@ -11,15 +11,24 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.myfinances.api.repositories.ApiCurrencyRepository
+import com.example.myfinances.api.repositories.ApiOperationRepository
+import com.example.myfinances.api.repositories.ApiOperationTypeRepository
+import com.example.myfinances.api.repositories.ApiPeriodRepository
 import com.example.myfinances.lists.SpinnerAdapter
 import com.example.myfinances.databinding.ActivityOperationBinding
+import com.example.myfinances.db.AccessDataRepository
 
 
 class OperationActivity : AppCompatActivity() {
 	private lateinit var binding: ActivityOperationBinding
+
+	private lateinit var accessDataRepo: AccessDataRepository
+	private lateinit var apiPeriodRepo: ApiPeriodRepository
+	private lateinit var apiOperationRepo: ApiOperationRepository
+	private lateinit var apiTypesRepo: ApiOperationTypeRepository
 	private var operation = 0
 	private var isUserInteracting: Boolean = false
-	private var images: IntArray? = intArrayOf()
 
 	@SuppressLint("ClickableViewAccessibility")
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,7 +36,13 @@ class OperationActivity : AppCompatActivity() {
 
 		binding = ActivityOperationBinding.inflate(layoutInflater)
 
-		setContentView(binding.root)
+		val sharedPreferencesContext = getSharedPreferences(AccessDataRepository.preferencesName, MODE_PRIVATE)
+		accessDataRepo = AccessDataRepository(sharedPreferencesContext)
+
+		val accessToken = accessDataRepo.getAccessToken()!!
+		apiPeriodRepo = ApiPeriodRepository(accessToken)
+		apiOperationRepo = ApiOperationRepository(accessToken)
+		apiTypesRepo = ApiOperationTypeRepository(accessToken)
 
 		binding.ivBackBtn.setOnClickListener {
 			val intent = Intent()
@@ -37,32 +52,33 @@ class OperationActivity : AppCompatActivity() {
 
 		val intent = this.intent
 
-		if (intent != null){
-			operation = intent.getIntExtra("operation", 0)
-			images = intent.getIntArrayExtra("images")
+//		if (intent != null){
+//			operation = intent.getIntExtra("operation", 0)
+//
+//			var mSpinnerAdapter: SpinnerAdapter =
+//				SpinnerAdapter(this, images)
+//
+//			binding.spinnerType.adapter = mSpinnerAdapter
+//
+//			binding.spinnerType.setOnTouchListener(OnTouchListener { _, _ ->
+//				binding.etTitle.hideKeyboard()
+//				binding.etAmount.hideKeyboard()
+//
+//				false
+//			})
+//
+//			binding.buttonAdd.setOnClickListener {
+//				if (checkFilled())
+//					sendData()
+//			}
+//
+//			if (operation == 1)
+//				binding.tvOperation.text = "Доход"
+//			else
+//				binding.tvOperation.text = "Расход"
+//		}
 
-			var mSpinnerAdapter: SpinnerAdapter =
-				SpinnerAdapter(this, images)
-
-			binding.spinnerType.adapter = mSpinnerAdapter
-
-			binding.spinnerType.setOnTouchListener(OnTouchListener { _, _ ->
-				binding.etTitle.hideKeyboard()
-				binding.etAmount.hideKeyboard()
-
-				false
-			})
-
-			binding.buttonAdd.setOnClickListener {
-				if (checkFilled())
-					sendData()
-			}
-
-			if (operation == 1)
-				binding.tvOperation.text = "Доход"
-			else
-				binding.tvOperation.text = "Расход"
-		}
+		setContentView(binding.root)
 	}
 
 	fun View.hideKeyboard() {
