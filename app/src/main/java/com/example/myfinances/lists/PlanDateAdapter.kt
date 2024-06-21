@@ -15,12 +15,10 @@ import com.example.myfinances.R
 class PlanDateAdapter (
     context: Context,
     dataArrayList: ArrayList<PlanDateData?>?,
-    statusCallBack: (status: Boolean, planId: Int) -> Unit,
-    planClickCallBack: (planId: Int) -> Unit) :
+    private val statusCallBack: (status: Boolean, planId: Int) -> Unit,
+    private val planClickCallBack: (planId: Int) -> Unit) :
 
 	ArrayAdapter<PlanDateData?>(context, R.layout.plans_list_date_item, dataArrayList!!) {
- 	val cbStatus = statusCallBack
-	val cbClick = planClickCallBack
 
 	@RequiresApi(Build.VERSION_CODES.O)
 	override fun getView(position: Int, view: View?, parent: ViewGroup): View {
@@ -37,7 +35,7 @@ class PlanDateAdapter (
 
 		clMain.layoutParams.height = 100 + planDateItem!!.items!!.count() * 195
 		tvDate.text = planDateItem.date
-		val planItemsAdapter = PlanItemAdapter(context,planDateItem.items,cbStatus,cbClick)
+		val planItemsAdapter = PlanItemAdapter(context,planDateItem.items,statusCallBack,planClickCallBack)
 		tvList.adapter = planItemsAdapter
 
 		return currentView

@@ -65,16 +65,11 @@ class PlanFragment : Fragment() {
 			startActivity(intent)
 		}
 
+		fillAllOperations()
+
 		return binding.root
 	}
 
-	@RequiresApi(Build.VERSION_CODES.O)
-	override fun onResume()
-	{
-		fillAllOperations()
-
-		super.onResume()
-	}
 	@RequiresApi(Build.VERSION_CODES.O)
 	private fun fillAllOperations(){
 		val request = CoroutineScope(Dispatchers.Main).async {
@@ -117,24 +112,24 @@ class PlanFragment : Fragment() {
 					it.dayOfMonth * 24 + it.monthValue * 720 + it.year * 8640
 				}))
 
-				dates.forEach {
+				dates.forEach { date ->
 					val dateStr =
-						if (it == null)
+						if (date == null)
 							"Без срока"
 						else{
-							val year = "${it.year}"
+							val year = "${date.year}"
 
 							val month =
-								if (it.monthValue < 10)
-									"0${it.monthValue}"
+								if (date.monthValue < 10)
+									"0${date.monthValue}"
 								else
-									"${it.monthValue}"
+									"${date.monthValue}"
 
 							val day =
-								if (it.dayOfMonth < 10)
-									"0${it.dayOfMonth}"
+								if (date.dayOfMonth < 10)
+									"0${date.dayOfMonth}"
 								else
-									it.dayOfMonth
+									date.dayOfMonth
 
 							"${year}-${month}-${day}"
 						}
@@ -152,15 +147,27 @@ class PlanFragment : Fragment() {
 					this.requireContext(),
 					plansDateData,
 					{ status, planId ->
-//						db.changePlanStatus(planId,status)
+						CoroutineScope(Dispatchers.Main).async {
+							apiPlanRepo.sendChangeStatusRequest(planId, if (status) 1 else 0).await()
+						}
 					},
 					{ planId ->
 						val dialogRemove = DialogRemoveItem("Удалить планируемый расход?") {
-//							db.removePlan(planId)
+							val requestDelete = CoroutineScope(Dispatchers.Main).async {
+								apiPlanRepo.sendDeletePlanRequest(planId).await()
+							}
 
-							fillAllOperations()
+							requestDelete.invokeOnCompletion {
+								val responseDelete = runBlocking { requestDelete.await() }
 
-							Toast.makeText(activity,"Готово", Toast.LENGTH_SHORT).show()
+								if (responseDelete.isSuccessful){
+									fillAllOperations()
+
+									Toast.makeText(activity,"Готово", Toast.LENGTH_SHORT).show()
+								}
+								else
+									Toast.makeText(activity,"Ошибка", Toast.LENGTH_SHORT).show()
+							}
 						}
 						val manager = parentFragmentManager
 						dialogRemove.show(manager,"removeDialog")
