@@ -180,10 +180,10 @@ class MainFragment : Fragment() {
 
 		dialog.show()
 
+		// Загрузка категорий и установка возможности выбора
 		val requestTypes = CoroutineScope(Dispatchers.Main).async {
 			apiTypesRepo.sendAllTypesRequest().await()
 		}
-		// Загрузка категорий и установка возможности выбора
 		requestTypes.invokeOnCompletion {
 			val responseTypes = runBlocking { requestTypes.await() }
 
@@ -237,27 +237,27 @@ class MainFragment : Fragment() {
 				amount *= -1.0
 
 			if (title.isEmpty()){
-				Toast.makeText(this.requireContext(),"Введите описание", Toast.LENGTH_SHORT).show()
+				Toasts.titleEmpty(this@MainFragment.requireContext()).show()
 				return@setOnClickListener
 			}
 
 			if (title.length > 30){
-				Toast.makeText(this.requireContext(),"Описание слишком длинное", Toast.LENGTH_SHORT).show()
+				Toasts.titleLong(this@MainFragment.requireContext()).show()
 				return@setOnClickListener
 			}
 
 			if (amount == 0.0){
-				Toast.makeText(this.requireContext(),"Введите сумму", Toast.LENGTH_SHORT).show()
+				Toasts.amountEmpty(this@MainFragment.requireContext()).show()
 				return@setOnClickListener
 			}
 
 			if (amount > 999_999.0 || amount < -999_999.0){
-				Toast.makeText(this.requireContext(),"Сумма слишком большая\n   (лимит +-999 тыс.)", Toast.LENGTH_SHORT).show()
+				Toasts.amountBig(this@MainFragment.requireContext()).show()
 				return@setOnClickListener
 			}
 
 			if (selectedType == null){
-				Toast.makeText(this.requireContext(),"Выберите категорию", Toast.LENGTH_SHORT).show()
+				Toasts.categoryEmpty(this@MainFragment.requireContext()).show()
 				return@setOnClickListener
 			}
 

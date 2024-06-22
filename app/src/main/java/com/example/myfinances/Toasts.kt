@@ -55,4 +55,24 @@ object Toasts {
     public val failure: (c: Context) -> Toast = {
             c -> Toast.makeText(c, "Неудачно", Toast.LENGTH_SHORT)
     }
+
+    public val titleEmpty: (c: Context) -> Toast = {
+        c -> Toast.makeText(c, "Введите описание", Toast.LENGTH_SHORT)
+    }
+
+    public val titleLong: (c: Context) -> Toast = {
+            c -> Toast.makeText(c, "Описание слишком длинное", Toast.LENGTH_SHORT)
+    }
+
+    public val amountEmpty: (c: Context) -> Toast = {
+            c -> Toast.makeText(c, "Введите сумму", Toast.LENGTH_SHORT)
+    }
+
+    public val amountBig: (c: Context) -> Toast = {
+            c -> Toast.makeText(c, "Сумма слишком большая\n   (лимит +-999 тыс.)", Toast.LENGTH_SHORT)
+    }
+
+    public val categoryEmpty: (c: Context) -> Toast = {
+            c -> Toast.makeText(c, "Выберите категорию", Toast.LENGTH_SHORT)
+    }
 }

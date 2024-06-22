@@ -17,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -98,6 +99,47 @@ class ApiPlanRepository(private val accessToken: String) {
         val request = Request.Builder()
             .url(url + endpoint)
             .put(requestBody)
+            .addHeader("Authorization", "Bearer " + accessToken)
+            .build()
+
+        try{
+            val response = client.newCall(request).execute()
+            val responseBody = response.body?.string()
+
+            if (response.isSuccessful) {
+                return@async BaseResult<Boolean>(SuccessResponse(true), null)
+            }
+            else{
+                val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+                val errorAdapter = moshi.adapter(ErrorResponse::class.java)
+
+                val errorResponse = responseBody?.let { errorAdapter.fromJson(it) }
+
+                return@async BaseResult(null, errorResponse)
+            }
+        } catch(e: IOException){
+            return@async BaseResult(null, RequestError)
+        }
+    }
+
+    fun sendAddPlanRequest(userId: Int, name: String, finalDate: String, typeId: Int): Deferred<BaseResult<Boolean>> = CoroutineScope(Dispatchers.IO).async {
+        val endpoint = "add"
+
+        val json = """
+            {
+              "userId": "$userId",
+              "name": "$name",
+              "finalDate": "$finalDate",
+              "amount": "0",
+              "typeId": "$typeId"
+            }
+            """.trimIndent()
+
+        val requestBody = json.toRequestBody("application/json; charset=utf-8".toMediaType())
+
+        val request = Request.Builder()
+            .url(url + endpoint)
+            .post(requestBody)
             .addHeader("Authorization", "Bearer " + accessToken)
             .build()
 
