@@ -24,10 +24,6 @@
             android:screenOrientation="portrait"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.PlanAddActivity"
-            android:screenOrientation="portrait"
-            android:exported="false" />
-        <activity
             android:name=".ui.activities.AllOperationsActivity"
             android:screenOrientation="portrait"
             android:exported="false" />
