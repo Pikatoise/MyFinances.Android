@@ -2,19 +2,15 @@ package com.example.myfinances.ui.activities
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.myfinances.R
 import com.example.myfinances.api.repositories.ApiTokenRepository
 import com.example.myfinances.databinding.ActivitySplashScreenBinding
 import com.example.myfinances.db.AccessDataRepository
-import kotlinx.coroutines.runBlocking
-import java.time.LocalDateTime
 
 class SplashScreenActivity : AppCompatActivity() {
 	private lateinit var binding: ActivitySplashScreenBinding

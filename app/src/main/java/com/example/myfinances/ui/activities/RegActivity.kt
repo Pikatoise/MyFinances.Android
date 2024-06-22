@@ -7,7 +7,6 @@ import android.os.Looper
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.myfinances.R
 import com.example.myfinances.Toasts
 import com.example.myfinances.api.repositories.ApiAuthRepository

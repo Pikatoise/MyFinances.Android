@@ -3,12 +3,8 @@ package com.example.myfinances.ui.activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.ReportFragment.Companion.reportFragment
 import com.example.myfinances.lists.DetailedListAdapter
 import com.example.myfinances.lists.DetailedListData
-import com.example.myfinances.db.Operation
-import com.example.myfinances.db.Period
-import com.example.myfinances.R
 import com.example.myfinances.api.repositories.ApiOperationRepository
 import com.example.myfinances.api.repositories.ApiOperationTypeRepository
 import com.example.myfinances.api.repositories.ApiPeriodRepository

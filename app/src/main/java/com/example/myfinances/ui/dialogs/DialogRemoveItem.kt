@@ -7,13 +7,8 @@ import androidx.fragment.app.DialogFragment
 import com.example.myfinances.R
 
 class DialogRemoveItem(message: String, callBackSuccess: () -> Unit) : DialogFragment() {
-	private lateinit var _callBack: () -> Unit
-	private lateinit var _message: String
-
-	init {
-		_callBack = callBackSuccess
-		_message = message
-	}
+	private var _callBack: () -> Unit = callBackSuccess
+	private var _message: String = message
 
 	override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 		return activity?.let {

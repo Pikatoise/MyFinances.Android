@@ -2,9 +2,6 @@ package com.example.myfinances.ui.fragments
 
 import android.app.Dialog
 import android.content.Intent
-import android.content.res.ColorStateList
-import android.icu.text.DecimalFormat
-import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -17,9 +14,6 @@ import android.widget.ImageView
 import android.widget.ListView
 import android.widget.RelativeLayout
 import android.widget.TextView
-import android.widget.Toast
-import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import androidx.core.content.ContextCompat.getColor
 import coil.ImageLoader
@@ -32,8 +26,6 @@ import com.example.myfinances.ui.dialogs.DialogRemoveItem
 import com.example.myfinances.lists.CurrentPeriodAdapter
 import com.example.myfinances.lists.CurrentPeriodItem
 import com.example.myfinances.NumberFormats
-import com.example.myfinances.ui.activities.OperationActivity
-import com.example.myfinances.db.OperationRepository
 import com.example.myfinances.R
 import com.example.myfinances.Toasts
 import com.example.myfinances.api.models.operation.OperationResponse
@@ -64,7 +56,6 @@ import kotlin.math.abs
 class MainFragment : Fragment() {
 	private lateinit var binding: FragmentMainBinding
 
-	private lateinit var db: OperationRepository
 	private lateinit var apiAuthRepo: ApiAuthRepository
 	private lateinit var apiTokenRepo: ApiTokenRepository
 	private lateinit var accessDataRepo: AccessDataRepository
@@ -136,7 +127,7 @@ class MainFragment : Fragment() {
 		configPieChart(binding.pieChart)
 
 		// Запрос валют
-		//fillCurrencyFromApi()
+		fillCurrencyFromApi()
 
 		fetchCurrentPeriod { periodId ->
 			currentPeriodId = periodId
@@ -461,15 +452,16 @@ class MainFragment : Fragment() {
 			val response = runBlocking { requestProfitOfPeriod.await() }
 			var expenses = 0.0
 
-			if (response.isSuccessful)
+			if (response.isSuccessful){
 				expenses = response.success!!.data
 
-			pieChart.centerText = NumberFormats.FormatToRuble(expenses)
+				pieChart.centerText = NumberFormats.FormatToRuble(expenses)
 
-			if (expenses > 0)
-				pieChart.setCenterTextColor(getColor(requireContext(), R.color.green_main))
-			else if (expenses < 0)
-				pieChart.setCenterTextColor(getColor(requireContext(), R.color.red_crimson))
+				if (expenses > 0)
+					pieChart.setCenterTextColor(getColor(requireContext(), R.color.green_main))
+				else if (expenses < 0)
+					pieChart.setCenterTextColor(getColor(requireContext(), R.color.red_crimson))
+			}
 		}
 
 		// Диаграмма и свойства

@@ -155,7 +155,7 @@ class PlanFragment : Fragment() {
 				tvDate.isClickable = true
 				tvDate.setTextColor(getColor(this.requireContext(), R.color.black))
 
-				tvDate.setOnClickListener { l ->
+				tvDate.setOnClickListener {
 					DatePickerDialog(
 						this.requireContext(),
 						{ _, year, monthOfYear, dayOfMonth ->

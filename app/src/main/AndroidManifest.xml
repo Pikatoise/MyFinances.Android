@@ -32,10 +32,6 @@
             android:screenOrientation="portrait"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.OperationActivity"
-            android:screenOrientation="portrait"
-            android:exported="false" />
-        <activity
             android:name=".ui.activities.SplashScreenActivity"
             android:screenOrientation="portrait"
             android:exported="true"

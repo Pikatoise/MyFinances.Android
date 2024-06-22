@@ -135,7 +135,6 @@ class ApiPeriodRepository(private val accessToken: String) {
                 return@async BaseResult(null, errorResponse)
             }
         } catch(e: IOException){
-            val a = e
             return@async BaseResult(null, RequestError)
         }
     }

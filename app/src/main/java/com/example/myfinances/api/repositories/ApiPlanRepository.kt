@@ -7,9 +7,7 @@ import com.example.myfinances.api.models.CollectionResult
 import com.example.myfinances.api.models.ErrorResponse
 import com.example.myfinances.api.models.RequestError
 import com.example.myfinances.api.models.SuccessResponse
-import com.example.myfinances.api.models.operation.OperationResponse
 import com.example.myfinances.api.models.plan.PlanResponse
-import com.example.myfinances.db.Plan
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory

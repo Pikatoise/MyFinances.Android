@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginHorizontal="12dp"
     android:layout_marginVertical="10dp"
-    android:elevation="5dp"
+    android:elevation="0dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white">
