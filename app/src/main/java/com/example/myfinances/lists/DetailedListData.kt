@@ -1,9 +1,8 @@
 package com.example.myfinances.lists
 
-class DetailedListData (
-	var imageSrc: String,
-	var name: String,
-	var amount: Double,
-	var year: Int,
-	var month: Int
+import com.example.myfinances.api.models.period.PeriodResponse
+
+data class DetailedListData (
+	var period: PeriodResponse,
+	var operations: ArrayList<DetailedListItemData>
 )

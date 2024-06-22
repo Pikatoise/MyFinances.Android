@@ -14,6 +14,7 @@ import com.example.myfinances.api.repositories.ApiOperationTypeRepository
 import com.example.myfinances.api.repositories.ApiPeriodRepository
 import com.example.myfinances.databinding.ActivityAllOperationsBinding
 import com.example.myfinances.db.AccessDataRepository
+import com.example.myfinances.lists.DetailedListItemData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -64,11 +65,6 @@ class AllOperationsActivity : AppCompatActivity() {
 			if (responseAllPeriods.isSuccessful){
 				val periods = responseAllPeriods.success!!.data
 
-				val periodWithOperations = ArrayList<ArrayList<DetailedListData>>()
-
-				for (i in 0..periods.size)
-					periodWithOperations.add(ArrayList<DetailedListData>())
-
 				val requestTypes = CoroutineScope(Dispatchers.Main).async {
 					apiTypesRepo.sendAllTypesRequest().await()
 				}
@@ -92,29 +88,27 @@ class AllOperationsActivity : AppCompatActivity() {
 									operations.reverse()
 
 									if (operations.isNotEmpty()){
+										detailedDataArrayList.add(
+											DetailedListData(periods[i], arrayListOf())
+										)
+
+										val currentPeriodPosition = detailedDataArrayList.size - 1
+
 										for (operation in operations){
-											val detailedListData = DetailedListData(
+											val detailedListData = DetailedListItemData(
 												types.find { x -> x.id == operation.typeId }!!.iconSrc,
 												operation.title,
-												operation.amount,
-												periods[i].year,
-												periods[i].month
+												operation.amount
 											)
 
-											periodWithOperations[i].add(detailedListData)
+											detailedDataArrayList[currentPeriodPosition].operations.add(detailedListData)
 										}
 									}
 
 									if (i == periods.size - 1){
-										periodWithOperations.reverse()
-
-										periodWithOperations.forEach {
-											it.forEach{
-												detailedDataArrayList.add(it)
-											}
-										}
-
 										if (detailedDataArrayList.isNotEmpty()){
+											detailedDataArrayList.reverse()
+
 											binding.tvAllOperationsEmpty.visibility = View.INVISIBLE
 
 											val listAdapter = DetailedListAdapter(this@AllOperationsActivity, detailedDataArrayList)
