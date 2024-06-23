@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.CheckBox
@@ -275,11 +276,13 @@ class PlanFragment : Fragment() {
 			if (response.isSuccessful){
 				val plans = response.success!!.data
 
-				if (plans.size > 0){
-					binding.tvPlanEmpty.visibility = View.INVISIBLE
+				if (plans.isNotEmpty()){
+					binding.tvPlanEmpty.visibility = INVISIBLE
+					binding.lvPlans.visibility = VISIBLE
 				}
 				else{
-					binding.tvPlanEmpty.visibility = View.VISIBLE
+					binding.tvPlanEmpty.visibility = VISIBLE
+					binding.lvPlans.visibility = INVISIBLE
 					return@invokeOnCompletion
 				}
 
