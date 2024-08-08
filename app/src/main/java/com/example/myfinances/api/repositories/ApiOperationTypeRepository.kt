@@ -19,8 +19,8 @@ import okhttp3.Request
 import java.io.IOException
 
 class ApiOperationTypeRepository(private val accessToken: String) {
-    val client = ApiClient.instance as OkHttpClient
-    val url = "https://api.myfinances.tw1.ru/api/OperationType/"
+    private val client = ApiClient.instance as OkHttpClient
+    private val url = ApiClient.SERVER_URL + "OperationType/"
 
     fun sendAllTypesRequest(): Deferred<CollectionResult<Array<OperationTypeResponse>>> = CoroutineScope(Dispatchers.IO).async {
         val endpoint = ""

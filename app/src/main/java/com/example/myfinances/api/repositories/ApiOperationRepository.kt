@@ -25,8 +25,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 
 class ApiOperationRepository(private val accessToken: String) {
-    val client = ApiClient.instance as OkHttpClient
-    val url = "https://api.myfinances.tw1.ru/api/Operation/"
+    private val client = ApiClient.instance as OkHttpClient
+    private val url = ApiClient.SERVER_URL + "Operation/"
 
     fun sendGroupByTypeAndSumRequest(periodId: Int): Deferred<CollectionResult<Array<Int>>> = CoroutineScope(
         Dispatchers.IO).async {

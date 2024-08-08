@@ -28,8 +28,8 @@ import java.time.Period
 
 
 class ApiPeriodRepository(private val accessToken: String) {
-    val client = ApiClient.instance as OkHttpClient
-    val url = "https://api.myfinances.tw1.ru/api/Period/"
+    private val client = ApiClient.instance as OkHttpClient
+    private val url = ApiClient.SERVER_URL + "Period/"
 
     fun sendProfitOfPeriodRequest(periodId: Int): Deferred<BaseResult<Double>> = CoroutineScope(
         Dispatchers.IO).async {

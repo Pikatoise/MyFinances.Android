@@ -23,7 +23,7 @@ import java.io.IOException
 
 class ApiCurrencyRepository(private val accessToken: String) {
     private val client = ApiClient.instance as OkHttpClient
-    private val url = "https://api.myfinances.tw1.ru/api/Currency/"
+    private val url = ApiClient.SERVER_URL + "Currency/"
 
     fun sendCurrencyRequest(currency: Currencies): Deferred<BaseResult<CurrencyResponse>> = CoroutineScope(Dispatchers.IO).async {
         val endpoint = currency.toString()

@@ -21,8 +21,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 
 class ApiAuthRepository{
-    val client = ApiClient.instance as OkHttpClient
-    val url = "https://api.myfinances.tw1.ru/api/Auth/"
+    private val client = ApiClient.instance as OkHttpClient
+    private val url = ApiClient.SERVER_URL + "Auth/"
 
     fun sendAuthRequest(login: String, password: String): Deferred<BaseResult<LoginResponse>> = CoroutineScope(Dispatchers.IO).async {
         val endpoint = "login"

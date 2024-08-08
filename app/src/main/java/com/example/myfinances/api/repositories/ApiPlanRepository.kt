@@ -22,8 +22,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 
 class ApiPlanRepository(private val accessToken: String) {
-    val client = ApiClient.instance as OkHttpClient
-    val url = "https://api.myfinances.tw1.ru/api/Plan/"
+    private val client = ApiClient.instance as OkHttpClient
+    private val url = ApiClient.SERVER_URL + "Plan/"
 
     fun sendUserPlansRequest(userId: Int): Deferred<CollectionResult<Array<PlanResponse>>> = CoroutineScope(Dispatchers.IO).async {
         val endpoint = "$userId"

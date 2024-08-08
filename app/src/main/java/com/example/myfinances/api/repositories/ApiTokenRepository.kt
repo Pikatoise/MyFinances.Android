@@ -29,10 +29,10 @@ import java.time.LocalDateTime
 import kotlin.math.exp
 
 class ApiTokenRepository {
-    val client = ApiClient.instance as OkHttpClient
-    val url = "https://api.myfinances.tw1.ru/api/Token/"
-    val refreshTokenLifetimeDays = 7
-    val accessTokenLifetimeMinutes = 30
+    private val client = ApiClient.instance as OkHttpClient
+    private val url = ApiClient.SERVER_URL + "Token/"
+    private val refreshTokenLifetimeDays = 7
+    private val accessTokenLifetimeMinutes = 30
 
     fun sendRefreshTokenRequest(accessToken: String, refreshToken: String): Deferred<BaseResult<TokenResponse>> = CoroutineScope(Dispatchers.IO).async{
         val endpoint = ""
