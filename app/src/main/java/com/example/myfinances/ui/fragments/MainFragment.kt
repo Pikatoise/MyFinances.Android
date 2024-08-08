@@ -28,6 +28,7 @@ import com.example.myfinances.lists.CurrentPeriodItem
 import com.example.myfinances.NumberFormats
 import com.example.myfinances.R
 import com.example.myfinances.Toasts
+import com.example.myfinances.api.ApiClient
 import com.example.myfinances.api.models.operation.OperationResponse
 import com.example.myfinances.api.models.operationType.OperationTypeResponse
 import com.example.myfinances.api.repositories.ApiAuthRepository
@@ -200,7 +201,7 @@ class MainFragment : Fragment() {
 
 						tvPreview.visibility = INVISIBLE
 
-						val iconPath = "https://api.myfinances.tw1.ru/images/${selectedType!!.iconSrc}"
+						val iconPath = ApiClient.SERVER_URL_IMAGES + selectedType!!.iconSrc
 						ivIcon.loadSvg(iconPath)
 
 						dialogType.dismiss()

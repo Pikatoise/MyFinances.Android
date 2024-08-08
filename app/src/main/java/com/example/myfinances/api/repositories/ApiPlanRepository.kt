@@ -23,7 +23,7 @@ import java.io.IOException
 
 class ApiPlanRepository(private val accessToken: String) {
     private val client = ApiClient.instance as OkHttpClient
-    private val url = ApiClient.SERVER_URL + "Plan/"
+    private val url = ApiClient.SERVER_URL_API + "Plan/"
 
     fun sendUserPlansRequest(userId: Int): Deferred<CollectionResult<Array<PlanResponse>>> = CoroutineScope(Dispatchers.IO).async {
         val endpoint = "$userId"

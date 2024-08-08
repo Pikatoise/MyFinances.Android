@@ -30,7 +30,7 @@ import kotlin.math.exp
 
 class ApiTokenRepository {
     private val client = ApiClient.instance as OkHttpClient
-    private val url = ApiClient.SERVER_URL + "Token/"
+    private val url = ApiClient.SERVER_URL_API + "Token/"
     private val refreshTokenLifetimeDays = 7
     private val accessTokenLifetimeMinutes = 30
 

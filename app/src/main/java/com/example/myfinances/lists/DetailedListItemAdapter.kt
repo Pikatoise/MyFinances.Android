@@ -16,6 +16,7 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.example.myfinances.NumberFormats
 import com.example.myfinances.R
+import com.example.myfinances.api.ApiClient
 
 class DetailedListItemAdapter(
     context: Context,
@@ -35,7 +36,7 @@ class DetailedListItemAdapter(
         val itemTitle = currentView.findViewById<TextView>(R.id.tv_detailed_item_title)
         val itemAmount = currentView.findViewById<TextView>(R.id.tv_detailed_item_amount)
 
-		val iconPath = "https://api.myfinances.tw1.ru/images/${detailedListItemData.imageSrc}"
+		val iconPath = ApiClient.SERVER_URL_IMAGES + detailedListItemData.imageSrc
 		itemImage.loadSvg(iconPath)
 		itemTitle.text = detailedListItemData.name
 		itemAmount.text = NumberFormats.FormatToRuble(detailedListItemData.amount)

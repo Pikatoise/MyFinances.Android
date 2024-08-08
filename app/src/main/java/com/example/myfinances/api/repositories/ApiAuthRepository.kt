@@ -22,7 +22,7 @@ import java.io.IOException
 
 class ApiAuthRepository{
     private val client = ApiClient.instance as OkHttpClient
-    private val url = ApiClient.SERVER_URL + "Auth/"
+    private val url = ApiClient.SERVER_URL_API + "Auth/"
 
     fun sendAuthRequest(login: String, password: String): Deferred<BaseResult<LoginResponse>> = CoroutineScope(Dispatchers.IO).async {
         val endpoint = "login"

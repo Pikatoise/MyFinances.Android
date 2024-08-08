@@ -26,7 +26,7 @@ import java.io.IOException
 
 class ApiOperationRepository(private val accessToken: String) {
     private val client = ApiClient.instance as OkHttpClient
-    private val url = ApiClient.SERVER_URL + "Operation/"
+    private val url = ApiClient.SERVER_URL_API + "Operation/"
 
     fun sendGroupByTypeAndSumRequest(periodId: Int): Deferred<CollectionResult<Array<Int>>> = CoroutineScope(
         Dispatchers.IO).async {

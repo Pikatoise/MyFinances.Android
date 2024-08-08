@@ -28,6 +28,7 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.example.myfinances.R
 import com.example.myfinances.Toasts
+import com.example.myfinances.api.ApiClient
 import com.example.myfinances.api.models.operationType.OperationTypeResponse
 import com.example.myfinances.api.repositories.ApiOperationTypeRepository
 import com.example.myfinances.api.repositories.ApiPlanRepository
@@ -209,7 +210,7 @@ class PlanFragment : Fragment() {
 
 						tvPreview.visibility = INVISIBLE
 
-						val iconPath = "https://api.myfinances.tw1.ru/images/${selectedType!!.iconSrc}"
+						val iconPath = ApiClient.SERVER_URL_IMAGES + selectedType!!.iconSrc
 						ivIcon.loadSvg(iconPath)
 
 						dialogType.dismiss()

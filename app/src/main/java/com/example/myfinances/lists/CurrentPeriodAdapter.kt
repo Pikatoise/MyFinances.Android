@@ -13,6 +13,7 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.example.myfinances.NumberFormats
 import com.example.myfinances.R
+import com.example.myfinances.api.ApiClient
 import com.example.myfinances.api.models.operationType.OperationTypeResponse
 
 class CurrentPeriodAdapter(
@@ -33,7 +34,7 @@ class CurrentPeriodAdapter(
 		val itemTitle = currentView.findViewById<TextView>(R.id.listName)
 		val itemAmount = currentView.findViewById<TextView>(R.id.listAmount)
 
-		val iconPath = "https://api.myfinances.tw1.ru/images/${types.find { x -> x.id == item.typeId }!!.iconSrc}"
+		val iconPath = ApiClient.SERVER_URL_IMAGES + types.find { x -> x.id == item.typeId }!!.iconSrc
 		itemImage.loadSvg(iconPath)
 		itemTitle.text = item.title
 		itemAmount.text = NumberFormats.FormatToRuble(item.amount)

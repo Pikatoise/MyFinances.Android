@@ -20,7 +20,7 @@ import java.io.IOException
 
 class ApiOperationTypeRepository(private val accessToken: String) {
     private val client = ApiClient.instance as OkHttpClient
-    private val url = ApiClient.SERVER_URL + "OperationType/"
+    private val url = ApiClient.SERVER_URL_API + "OperationType/"
 
     fun sendAllTypesRequest(): Deferred<CollectionResult<Array<OperationTypeResponse>>> = CoroutineScope(Dispatchers.IO).async {
         val endpoint = ""

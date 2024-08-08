@@ -12,6 +12,7 @@ import coil.ImageLoader
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.example.myfinances.R
+import com.example.myfinances.api.ApiClient
 import com.example.myfinances.api.models.operationType.OperationTypeResponse
 
 class TypeAdapter(
@@ -31,7 +32,7 @@ class TypeAdapter(
         val itemImage = currentView!!.findViewById<ImageView>(R.id.iv_item_type_icon)
         val itemButton = currentView.findViewById<TextView>(R.id.button_item_type)
 
-        val iconPath = "https://api.myfinances.tw1.ru/images/${item.iconSrc}"
+        val iconPath = ApiClient.SERVER_URL_IMAGES + item.iconSrc
         itemImage.loadSvg(iconPath)
         itemButton.setOnClickListener {
             clickCallback(position)

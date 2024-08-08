@@ -16,6 +16,7 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.example.myfinances.db.Plan
 import com.example.myfinances.R
+import com.example.myfinances.api.ApiClient
 
 class PlanItemAdapter(
 	context: Context,
@@ -41,7 +42,7 @@ class PlanItemAdapter(
 		val cbStatus = currentView.findViewById<CheckBox>(R.id.cb_plan_status)
 		val clPlanItem = currentView.findViewById<ConstraintLayout>(R.id.cl_plan_item)
 
-		val iconPath = "https://api.myfinances.tw1.ru/images/${planItem.typePath}"
+		val iconPath = ApiClient.SERVER_URL_IMAGES + planItem.typePath
 		ivIcon.loadSvg(iconPath)
 		tvName.text = planItem.name
 		cbStatus.isChecked = planItem.status
